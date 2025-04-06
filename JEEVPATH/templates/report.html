@@ -1,0 +1,785 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Micro Clinic - Reports</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            overflow: hidden;
+            background-color: #f0f0f0;
+            height: 100vh;
+            /*Ensures full viewport height is used */
+        }
+
+        .clinic-page {
+            background-image: url('https://i.ibb.co/xKwrK3Zz/b75c593460ad.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .smartphone-container {
+            width: 320px;
+            height: 568px;
+            padding: 30px;
+            border: 0.5px solid rgba(0, 0, 0, 0.2);
+            border-radius: 30px;
+            background-color: white;
+            text-align: center;
+            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+            justify-content: space-between;
+            /* Ensure elements are spaced out */
+        }
+
+        .top-icons {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 7px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 20;
+        }
+
+        .top-icons i {
+            color: lightgrey;
+            font-size: 1.1em;
+            cursor: pointer;
+        }
+
+        .page-heading {
+            font-size: 1.6em;
+            font-weight: 600;
+            color: #3a8a7a;
+            text-align: center;
+            width: 100%;
+            margin-top: 5px;
+            margin-bottom: 15px;
+            cursor: pointer; /* Make the heading clickable */
+        }
+
+        .report-list {
+            width: 85%;
+            padding: 0;
+            box-sizing: border-box;
+            list-style: none;
+            margin-top: 0;
+            text-align: left;
+            flex-grow: 1;
+            /*Allows report list to fill vertical space */
+            overflow-y: auto;
+            /*Make report list scrollable*/
+
+        }
+
+        .report-list li {
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0px 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 10px;
+            background-color: #fff;
+            transition: transform 0.2s ease;
+            position: relative;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .report-list li:hover {
+            transform: scale(1.02);
+        }
+
+        .report-list li a {
+            display: block;
+            text-decoration: none;
+            color: #333;
+            font-size: 0.9em;
+            flex-grow: 1;
+            /* Allows the text to take up most of the space */
+        }
+
+        .report-icon {
+            cursor: pointer;
+            transition: transform 0.3s ease-in-out;
+            margin-left: 10px;
+        }
+
+        .report-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .bottom-icons {
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-sizing: border-box;
+            background-color: white;
+            border-top: 1px solid #eee;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+        }
+
+        .bottom-icons a {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bottom-icons i {
+            color: lightgrey;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: color 0.15s ease-in-out;
+        }
+
+        .bottom-icons i.active {
+            color: #30a88a;
+        }
+
+        .slide-out {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            transition: transform 0.3s ease-out;
+            /* Changed from left to transform */
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: left;
+            overflow-y: auto;
+            will-change: transform;
+            /* Use will-change: transform; */
+            z-index: 30;
+        }
+
+        .smartphone-container.slide-active {
+            box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.2), 0px 5px 20px rgba(0, 0, 0, 0.1);
+
+        }
+
+        .slide-out.active {
+            transform: translateX(100%);
+            /* Use transform instead of left */
+        }
+
+        .user-slide-out {
+            position: absolute;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            transition: transform 0.3s ease-out;
+            /* Changed from right to transform */
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: left;
+            overflow-y: auto;
+            will-change: transform;
+            /* Use will-change: transform; */
+            z-index: 30;
+        }
+
+        .smartphone-container.user-slide-active {
+            box-shadow: -2px 0px 5px rgba(0, 0, 0, 0.2), 0px 5px 20px rgba(0, 0, 0, 0.1);
+
+        }
+
+        .user-slide-out.active {
+            transform: translateX(-100%);
+            /* Use transform instead of right */
+        }
+
+        .slide-out h2 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            text-align: left;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .slide-out h3 {
+            font-size: 1.1em;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        .slide-out p {
+            font-size: 0.9em;
+            margin-bottom: 3px;
+            text-align: left;
+        }
+
+        .hospital-list {
+            list-style-type: disc;
+            padding-left: 25px;
+        }
+
+        .hospital-list li {
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5em;
+            color: #555;
+            cursor: pointer;
+            background: none;
+            border: none;
+            outline: none;
+            transition: color 0.2s;
+            z-index: 35;
+        }
+
+        .close-button:hover {
+            color: #000;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .logout-button {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            font-size: 1em;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 20px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+            z-index: 1;
+        }
+
+        .logout-button:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .reminder-section {
+            margin-top: 20px;
+            text-align: left;
+            animation: fadeIn 0.5s ease-out;
+            z-index: 1;
+        }
+
+        .reminder-section h3 {
+            font-size: 1.1em;
+            margin-bottom: 5px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .reminder-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .reminder-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            animation: slideInLeft 0.5s ease-out;
+        }
+
+        .reminder-item i {
+            font-size: 1.5em;
+            color: #30a88a;
+            margin-right: 10px;
+            animation: rotateClock 2s linear infinite;
+        }
+
+        .reminder-item p {
+            font-size: 0.9em;
+            margin: 0;
+            color: #555;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideInLeft {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes rotateClock {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .health-progress-section {
+            margin-top: 20px;
+            text-align: left;
+            animation: fadeIn 0.5s ease-out;
+            z-index: 1;
+        }
+
+        .health-progress-section h3 {
+            font-size: 1.1em;
+            margin-bottom: 5px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 50%;
+            background-color: #30a88a;
+            border-radius: 5px;
+            animation: progressBarFill 1s ease-out;
+        }
+
+        .day-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+
+        .day-labels span {
+            flex: 1;
+            text-align: center;
+        }
+
+        @keyframes progressBarFill {
+            from {
+                width: 0;
+            }
+
+            to {
+                width: 50%;
+            }
+        }
+
+        /* Report Display Styles */
+        .report-display {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            border-radius: 0;
+            box-shadow: none;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 50;
+            padding: 0;
+            box-sizing: border-box;
+            overflow: hidden;
+            flex-direction: column;
+        }
+
+        .report-display img {
+            max-width: 100%;
+            max-height: 100%;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            border-radius: 0;
+            box-shadow: none;
+            animation: zoomIn 0.3s ease-out;
+        }
+
+        .report-display .close-report {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5em;
+            color: #555;
+            cursor: pointer;
+            transition: color 0.2s;
+            z-index: 51;
+        }
+
+        .report-display .close-report:hover {
+            color: #000;
+        }
+
+        .report-display.active {
+            display: flex;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .scrollable-content.report-active,
+        .top-icons.report-active,
+        .page-heading.report-active,
+        .bottom-icons.report-active {
+            display: none;
+        }
+
+        @keyframes zoomIn {
+            from {
+                transform: scale(0.5);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        .fa-eye {
+            font-size: 1.2em;
+            color: #3a8a7a;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="clinic-page">
+        <div class="smartphone-container">
+
+            <div class="top-icons">
+                <i class="fas fa-bars menu-icon"></i>
+                <i class="fas fa-user-circle user-icon"></i>
+            </div>
+
+            <h1 class="page-heading">Lab Reports</h1>
+
+
+            <ul class="report-list scrollable-content">
+                <li>
+                    <a href="#">Complete Blood Count (CBC) – 12 Jan 2025</a>
+                    <i class="fas fa-eye report-icon" data-report="cbc"></i>
+                </li>
+                <li>
+                    <a href="#">Lipid Profile – 25 Jan 2025</a>
+                    <i class="fas fa-eye report-icon" data-report="lipid"></i>
+                </li>
+                <li>
+                    <a href="#">Liver Function Test (LFT) – 03 Feb 2025</a>
+                    <i class="fas fa-eye report-icon" data-report="lft"></i>
+                </li>
+                <li>
+                    <a href="#">Kidney Function Test (KFT) – 18 Feb 2025</a>
+                    <i class="fas fa-eye report-icon" data-report="kft"></i>
+                </li>
+                <li>
+                    <a href="#">Thyroid Function Test (TFT) – 20 Jan 2025</a>
+                    <i class="fas fa-eye report-icon" data-report="tft"></i>
+                </li>
+                <li>
+                    <a href="#">C-Reactive Protein (CRP) Test – 28 Feb 2025</a>
+                    <i class="fas fa-eye report-icon" data-report="crp"></i>
+                </li>
+            </ul>
+
+
+
+            <!-- Report Display Overlays -->
+            <div class="report-display" id="cbc-report">
+                <span class="close-report">×</span>
+                <img src="" alt="CBC Report Image">
+            </div>
+
+            <div class="report-display" id="lipid-report">
+                <span class="close-report">×</span>
+                <img src="" alt="Lipid Profile Image">
+            </div>
+
+            <div class="report-display" id="lft-report">
+                <span class="close-report">×</span>
+                <img src="" alt="LFT Report Image">
+            </div>
+
+            <div class="report-display" id="kft-report">
+                <span class="close-report">×</span>
+                <img src="" alt="KFT Report Image">
+            </div>
+
+            <div class="report-display" id="tft-report">
+                <span class="close-report">×</span>
+                <img src="" alt="TFT Report Image">
+            </div>
+
+            <div class="report-display" id="crp-report">
+                <span class="close-report">×</span>
+                <img src="" alt="CRP Report Image">
+            </div>
+
+            <div class="bottom-icons">
+                <a href="{{ url_for('clinic') }}" title="Clinic Home"><i class="fas fa-clinic-medical "></i></a>
+                <a href="{{ url_for('checkup') }}" title="Checkup"><i class="fas fa-notes-medical"></i></a>
+                <a href="{{ url_for('blood_test') }}" title="Blood Test"><i class="fas fa-tint"></i></a>
+                <a href="{{ url_for('report') }}" title="Reports"><i class="fas fa-file-alt active"></i></a>
+            </div>
+
+            <!-- Left Slide-out Section -->
+            <div class="slide-out">
+                <button class="close-button">×</button>
+                <h2>Hello User!</h2>
+                <p>Location: Rourkela, Odisha</p>
+
+                <h3>Near by hospitals</h3>
+                <ul class="hospital-list">
+                    <li>RGH: 3km</li>
+                    <li>Vesaj Patel Hospital: 5km</li>
+                    <li>Lifeline Hospital: 5.5km</li>
+                    <li>CWS Hospital: 13km</li>
+                    <li>Aastha Hospital: 5.5km</li>
+                </ul>
+            </div>
+
+            <!-- Right Slide-out Section -->
+            <div class="user-slide-out">
+                <button class="close-button">×</button>
+                <h2>User Profile</h2>
+                <p>User Id: JEEV3317</p>
+                <p>Age: 22yr</p>
+                <p>Gender: Female</p>
+                <p>Height: 173 cm</p>
+                <p>Weight: 71 kg</p>
+
+                <div class="reminder-section">
+                    <h3>Reminder</h3>
+                    <ul class="reminder-list">
+                        <li class="reminder-item">
+                            <i class="far fa-clock"></i>
+                            <p>Antiobatic: 08:00 am & 10:00 pm AF</p>
+                        </li>
+                        <li class="reminder-item">
+                            <i class="far fa-clock"></i>
+                            <p>Paracetamol: 08:00 am & 10:00 pm AF</p>
+                        </li>
+                        <li class="reminder-item">
+                            <i class="far fa-clock"></i>
+                            <p>mancold: 09:00 pm AF</p>
+                        </li>
+                        <li class="reminder-item">
+                            <i class="far fa-clock"></i>
+                            <p>Gasonix: 08:00 am & 10:00 am BF</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="health-progress-section">
+                    <h3>Your Health Progress</h3>
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill"></div>
+                    </div>
+                    <div class="day-labels">
+                        <span>Day 1</span>
+                        <span>Day 2</span>
+                        <span>Day 3</span>
+                        <span>Day 4</span>
+                        <span>Day 5</span>
+                        <span>Day 6</span>
+                        <span>Day 7</span>
+                    </div>
+                </div>
+
+                <form method="post" action="{{ url_for('logout') }}">
+                    <button type="submit" class="logout-button">Logout</button>
+                </form>
+
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const menuIcon = document.querySelector('.menu-icon');
+        const userIcon = document.querySelector('.user-icon');
+        const slideOut = document.querySelector('.slide-out');
+        const userSlideOut = document.querySelector('.user-slide-out');
+        const closeButton = document.querySelectorAll('.close-button');
+        const smartphoneContainer = document.querySelector('.smartphone-container');
+        const reportListItems = document.querySelectorAll('.report-list li');
+        const reportDisplays = document.querySelectorAll('.report-display');
+        const closeReportButtons = document.querySelectorAll('.close-report');
+        const bottomIconContainer = document.querySelector('.bottom-icons');
+        const pageHeading = document.querySelector('.page-heading'); // Get the page heading element
+
+        const reportImages = {
+            "cbc": "https://i.ibb.co/wh8LzxRK/1394b491f37d.jpg",
+            "lipid": "https://i.ibb.co/S7ZTjX6S/94cbec7c0403.jpg",
+            "lft": "https://i.ibb.co/wFQmtCK9/03a45cd3aa69.jpg",
+            "kft": "https://i.ibb.co/tPkbgSFg/2e2094bac7cf.jpg",
+            "tft": "https://i.ibb.co/MkZvJfzq/f8957ea32c4e.jpg",
+            "crp": "https://i.ibb.co/PZhtVzLK/c45564499f40.jpg"
+        };
+
+        // Bottom Nav Active State
+        bottomIconContainer.addEventListener('click', function (event) {
+            const target = event.target;
+            if (target.tagName === 'I') {
+                const icons = document.querySelectorAll('.bottom-icons i');
+                icons.forEach(icon => icon.classList.remove('active'));
+                target.classList.add('active');
+            }
+        });
+
+        // Slide-out menus
+        menuIcon.addEventListener('click', () => {
+            slideOut.classList.add('active');
+            smartphoneContainer.classList.add('slide-active');
+        });
+
+        userIcon.addEventListener('click', () => {
+            userSlideOut.classList.add('active');
+            smartphoneContainer.classList.add('user-slide-active');
+        });
+
+        closeButton.forEach(button => {
+            button.addEventListener('click', () => {
+                slideOut.classList.remove('active');
+                userSlideOut.classList.remove('active');
+                smartphoneContainer.classList.remove('slide-active');
+                smartphoneContainer.classList.remove('user-slide-active');
+            });
+        });
+
+        // Report Display Functionality
+        reportListItems.forEach(item => {
+            const reportIcon = item.querySelector('.report-icon');
+
+            reportIcon.addEventListener('click', (event) => {
+                event.preventDefault(); // Prevent LI click
+                event.stopPropagation();
+
+                const reportType = reportIcon.dataset.report;
+                const reportDisplay = document.getElementById(`${reportType}-report`);
+                const imgElement = reportDisplay.querySelector('img');
+
+                // Close any open slide-out menus
+                slideOut.classList.remove('active');
+                userSlideOut.classList.remove('active');
+                smartphoneContainer.classList.remove('slide-active');
+                smartphoneContainer.classList.remove('user-slide-active');
+
+                if (reportDisplay) {
+                    // Set image source
+                    imgElement.src = reportImages[reportType];
+
+                    // Show the report display and hide other elements
+                    reportDisplay.classList.add('active');
+                    document.querySelector('.scrollable-content').classList.add('report-active');
+                    document.querySelector('.top-icons').classList.add('report-active');
+                    document.querySelector('.page-heading').classList.add('report-active');
+                    document.querySelector('.bottom-icons').classList.add('report-active');
+
+                    // Disable scrolling on the smartphone container
+                    smartphoneContainer.style.overflow = 'hidden';
+                }
+            });
+        });
+
+        closeReportButtons.forEach(button => {
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+                event.stopPropagation(); // Prevent LI click
+                const reportDisplay = button.closest('.report-display');
+                if (reportDisplay) {
+                    reportDisplay.classList.remove('active');
+
+                    // Restore original content visibility
+                    document.querySelector('.scrollable-content').classList.remove('report-active');
+                    document.querySelector('.top-icons').classList.remove('report-active');
+                    document.querySelector('.page-heading').classList.remove('report-active');
+                    document.querySelector('.bottom-icons').classList.remove('report-active');
+
+                    // Enable scrolling on the smartphone container
+                    smartphoneContainer.style.overflow = 'auto';
+                }
+            });
+        });
+
+        // Refresh Page on Heading Click
+        pageHeading.addEventListener('click', () => {
+            location.reload();
+        });
+    </script>
+
+</body>
+
+</html>

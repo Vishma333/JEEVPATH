@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Micro Clinic - Blood Test</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            overflow: hidden;
+            background-color: #f0f0f0;
+        }
+
+        .clinic-page {
+            background-image: url('https://i.ibb.co/xKwrK3Zz/b75c593460ad.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .smartphone-container {
+            width: 320px;
+            height: 568px;
+            padding: 30px;
+            border: 0.5px solid rgba(0, 0, 0, 0.2);
+            border-radius: 30px;
+            background-color: white;
+            text-align: center;
+            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .top-icons {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 7px;
+            box-sizing: border-box;
+        }
+
+        .top-icons i {
+            color: lightgrey;
+            font-size: 1.1em;
+            cursor: pointer;
+        }
+
+        .bottom-icons {
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-sizing: border-box;
+            background-color: white;
+            border-top: 1px solid #eee;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+        }
+
+        .bottom-icons a {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bottom-icons i {
+            color: lightgrey;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: color 0.15s ease-in-out;
+        }
+
+        .bottom-icons i.active {
+            color: #30a88a;
+        }
+
+        /* Blood Test Page Specific Styles */
+        .loc-header {
+            font-size: 1.6em;
+            font-weight: 600;
+            color: #30a88a;
+            margin-bottom: 20px;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .test-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            width: 100%;
+            margin-bottom: 25px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .test-button {
+            background-color: #e8f5e9;
+            /* Light green background */
+            color: #333;
+            border: none;
+            border-radius: 25px;
+            padding: 12px 20px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            /* Subtle shadow */
+        }
+
+        .test-button:hover {
+            background-color: #dcedc8;
+            /* Lighter green on hover */
+            transform: translateY(-3px);
+            /* Slight lift effect */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .check-now-button {
+            background-color: #30a88a;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            box-shadow: 0 3px 7px rgba(0, 0, 0, 0.2);
+            /* More pronounced shadow */
+            animation: pulse 2s infinite;
+            /* Pulse animation */
+        }
+
+        .check-now-button:hover {
+            background-color: #258067;
+            transform: scale(1.05);
+            /* Slight scale up on hover */
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Slide-out Styles */
+        .slide-out {
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            transition: left 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: left;
+            overflow-y: auto;
+            will-change: left;
+            z-index: 2;
+            /* Ensure it's above the button */
+        }
+
+        .smartphone-container.slide-active {
+            box-shadow: 2px 0px 5px rgba(0, 0, 0, 0.2), 0px 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .slide-out.active {
+            left: 0;
+        }
+
+        .slide-out h2 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            text-align: left;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .slide-out h3 {
+            font-size: 1.1em;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            text-align: left;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .slide-out p {
+            font-size: 0.9em;
+            margin-bottom: 3px;
+            text-align: left;
+        }
+
+        .hospital-list {
+            list-style-type: disc;
+            padding-left: 25px;
+        }
+
+        .hospital-list li {
+            margin-bottom: 5px;
+            text-align: left;
+        }
+
+        /* Close Button Style */
+        .close-button {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 1.5em;
+            color: #555;
+            cursor: pointer;
+            background: none;
+            border: none;
+            outline: none;
+            transition: color 0.2s;
+            z-index: 10;
+        }
+
+        .close-button:hover {
+            color: #000;
+        }
+
+        /* User Slide-out Styles */
+        .user-slide-out {
+            position: absolute;
+            top: 0;
+            right: -100%;
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+            transition: right 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: left;
+            overflow-y: auto;
+            will-change: right;
+            z-index: 2;
+            /* Ensure it's above the button */
+        }
+
+        .user-slide-out.active {
+            right: 0;
+        }
+
+        .smartphone-container.user-slide-active {
+            box-shadow: -2px 0px 5px rgba(0, 0, 0, 0.2), 0px 5px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Glass Style Button */
+        .logout-button {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 16px;
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 10px 20px;
+            font-size: 1em;
+            color: #333;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            margin-top: 20px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+
+        .logout-button:hover {
+            background: rgba(255, 255, 255, 0.4);
+        }
+
+        .reminder-section {
+            margin-top: 20px;
+            text-align: left;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .reminder-section h3 {
+            font-size: 1.1em;
+            margin-bottom: 5px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .reminder-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .reminder-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            animation: slideInLeft 0.5s ease-out;
+        }
+
+        .reminder-item i {
+            font-size: 1.5em;
+            color: #30a88a;
+            margin-right: 10px;
+            animation: rotateClock 2s linear infinite;
+        }
+
+        .reminder-item p {
+            font-size: 0.9em;
+            margin: 0;
+            color: #555;
+        }
+
+        .health-progress-section {
+            margin-top: 20px;
+            text-align: left;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .health-progress-section h3 {
+            font-size: 1.1em;
+            margin-bottom: 5px;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .progress-bar {
+            height: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+            margin-top: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            width: 50%;
+            background-color: #30a88a;
+            border-radius: 5px;
+            animation: progressBarFill 1s ease-out;
+        }
+
+        .day-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.8em;
+            margin-top: 5px;
+        }
+
+        .day-labels span {
+            flex: 1;
+            text-align: center;
+        }
+
+        /* Animations (reusing and adjusting) */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+
+            50% {
+                transform: scale(1.03);
+            }
+
+            100% {
+                transform: scale(1);
+            }
+        }
+        /* Hide "Check Now" when slide-out is active */
+        .smartphone-container.slide-active .check-now-button,
+        .smartphone-container.user-slide-active .check-now-button {
+            display: none;
+        }
+
+        /* Rotate Clock Animation */
+        @keyframes rotateClock {
+            from {
+                transform: rotate(0deg);
+            }
+
+            to {
+                transform: rotate(360deg);
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="clinic-page">
+        <div class="smartphone-container">
+
+            <div class="top-icons">
+                <i class="fas fa-bars menu-icon"></i>
+                <i class="fas fa-user-circle user-icon"></i>
+            </div>
+
+            <!-- Left Slide-out Section -->
+            <div class="slide-out">
+                <button class="close-button">×</button>
+                <h2>Hello User!</h2>
+                <p>Location: Rourkela, Odisha</p>
+
+                <h3>Near by hospitals</h3>
+                <ul class="hospital-list">
+                    <li>RGH: 3km</li>
+                    <li>Vesaj Patel Hospital: 5km</li>
+                    <li>Lifeline Hospital: 5.5km</li>
+                    <li>CWS Hospital: 13km</li>
+                    <li>Aastha Hospital: 5.5km</li>
+                </ul>
+            </div>
+
+            <!-- Right Slide-out Section -->
+            <div class="user-slide-out">
+                <button class="close-button">×</button>
+                <h2>User Profile</h2>
+                <p>User Id: JEEV3317</p>
+                <p>Age: 22yr</p>
+                <p>Gender: Female</p>
+                <p>Height: 173 cm</p>
+                <p>Weight: 71 kg</p>
+
+                <div class="reminder-section">
+                    <h3>Reminder</h3>
+                    <ul class="reminder-list">
+                        <li class="reminder-item">
+                            <i class="far fa-clock animated-clock"></i>
+                            <p>Antiobatic: 08:00 am & 10:00 pm AF</p>
+                        </li>
+                        <li class="reminder-item">
+                            <i class="far fa-clock animated-clock"></i>
+                            <p>Paracetamol: 08:00 am & 10:00 pm AF</p>
+                        </li>
+                        <li class="reminder-item">
+                            <i class="far fa-clock animated-clock"></i>
+                            <p>mancold: 09:00 pm AF</p>
+                        </li>
+                        <li class="reminder-item">
+                            <i class="far fa-clock animated-clock"></i>
+                            <p>Gasonix: 08:00 am & 10:00 am BF</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="health-progress-section">
+                    <h3>Your Health Progress</h3>
+                    <div class="progress-bar">
+                        <div class="progress-bar-fill"></div>
+                    </div>
+                    <div class="day-labels">
+                        <span>Day 1</span>
+                        <span>Day 2</span>
+                        <span>Day 3</span>
+                        <span>Day 4</span>
+                        <span>Day 5</span>
+                        <span>Day 6</span>
+                        <span>Day 7</span>
+                    </div>
+                    <form method="post" action="{{ url_for('logout') }}">
+                        <button type="submit" class="logout-button">Logout</button>
+                    </form>
+                </div>
+
+            </div>
+
+
+            <!-- Blood Test Page Content -->
+            <h1 class="loc-header">Lab On Chip (LOC)</h1>
+
+            <div class="test-buttons">
+                <button class="test-button">Malaria</button>
+                <button class="test-button">Dengue</button>
+                <button class="test-button">Typhoid</button>
+                <button class="test-button">Complete Blood Count</button>
+                <button class="test-button">Lipid Profile</button>
+                <button class="test-button">Liver Function Test</button>
+            </div>
+
+            <button class="check-now-button">Check Now</button>
+
+            <div class="bottom-icons">
+                <a href="{{ url_for('clinic') }}" title="Clinic Home"><i class="fas fa-clinic-medical"></i></a>
+                <a href="{{ url_for('checkup') }}" title="Checkup"><i class="fas fa-notes-medical"></i></a>
+                <a href="{{ url_for('blood_test') }}" title="Blood Test"><i class="fas fa-tint active"></i></a>
+                <a href="{{ url_for('report') }}" title="Reports"><i class="fas fa-file-alt"></i></a>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const bottomIcons = document.querySelectorAll('.bottom-icons i');
+        const menuIcon = document.querySelector('.menu-icon');
+        const userIcon = document.querySelector('.user-icon');
+        const slideOut = document.querySelector('.slide-out');
+        const userSlideOut = document.querySelector('.user-slide-out');
+        const closeButton = document.querySelectorAll('.close-button');
+        const smartphoneContainer = document.querySelector('.smartphone-container');
+
+        // Removing Active class from the other three icon except the one which is clicked
+        const bottomIconContainer = document.querySelector('.bottom-icons');
+        bottomIconContainer.addEventListener('click', function (event) {
+            const target = event.target;
+            if (target.tagName === 'I') {
+                const icons = document.querySelectorAll('.bottom-icons i');
+                icons.forEach(icon => icon.classList.remove('active'));
+                target.classList.add('active');
+            }
+        });
+
+
+        menuIcon.addEventListener('click', () => {
+            slideOut.classList.add('active');
+            smartphoneContainer.classList.add('slide-active');
+        });
+
+        userIcon.addEventListener('click', () => {
+            userSlideOut.classList.add('active');
+            smartphoneContainer.classList.add('user-slide-active');
+        });
+
+        closeButton.forEach(button => {
+            button.addEventListener('click', () => {
+                slideOut.classList.remove('active');
+                userSlideOut.classList.remove('active');
+                smartphoneContainer.classList.remove('slide-active');
+                smartphoneContainer.classList.remove('user-slide-active');
+            });
+        });
+    </script>
+
+</body>
+
+</html>

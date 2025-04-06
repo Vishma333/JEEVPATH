@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Micro Clinic</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        :root {
+            --primary-color: #3a8a7a;
+            --primary-color-dark: #26826b;
+            --light-grey: #f0f0f0;
+            --medium-grey: #ccc; /* Still defined, but lightgrey will be used for icons */
+            --dark-grey: #555;
+            --active-color: #30a88a;
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --shadow-medium: rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            overflow: hidden; /* Prevent scrolling the whole page */
+            background-color: var(--light-grey); /* Fallback background */
+        }
+
+        /* Clinic Page Wrapper for Background */
+        .clinic-page {
+            background-image: url('https://i.ibb.co/xKwrK3Zz/b75c593460ad.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            min-height: 100vh; /* Ensure it covers viewport */
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px; /* Add some padding so container isn't stuck to edges */
+            box-sizing: border-box;
+        }
+
+        /* Smartphone Container Dimensions */
+        .smartphone-container {
+            width: 320px;
+            height: 568px;
+            padding: 30px;
+            border: 0.5px solid rgba(0, 0, 0, 0.2);
+            border-radius: 30px;
+            background-color: white;
+            text-align: center;
+            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+            overflow: hidden; /* Still hidden to contain content */
+            /* Added transition for shadow changes */
+            transition: box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .top-icons {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 7px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 20; /* Still higher than normal content, but lower than slides/chatbot */
+            margin-bottom: 5px;
+             /* Added transition for hiding */
+             opacity: 1;
+             pointer-events: auto;
+             transition: opacity 0.3s ease-out;
+        }
+
+        .top-icons i {
+            color: lightgrey;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        .top-icons i:hover {
+            color: var(--active-color);
+            transform: scale(1.1);
+        }
+
+        .video-container {
+            width: calc(100% - 40px); /* Width relative to container padding */
+            height: 100px; /* ** ADJUST THIS HEIGHT AS NEEDED TO FIT ** */
+            margin: 0 auto 10px auto;
+            border-radius: 10px; /* Rounded corners */
+            overflow: hidden; /* Clip video to rounded corners */
+            box-shadow: 0px 2px 6px var(--shadow-light);
+             opacity: 0;
+             animation: fadeIn 0.8s ease-out 0.2s forwards;
+        }
+
+        .clinic-video {
+             width: 100%;
+             height: 100%;
+             object-fit: cover; /* Cover the container */
+             display: block; /* Remove extra space below */
+        }
+
+        .micro-clinic-heading {
+            font-size: 1.6em; /* Adjusted size */
+            font-weight: 600;
+            color: var(--primary-color);
+            text-align: center;
+            width: 100%;
+            padding: 0 20px; /* Padding to prevent touching edges */
+            box-sizing: border-box;
+            margin-top: 0px; /* Space above */
+            margin-bottom: 15px; /* Space below before tiles */
+            animation: fadeInUp 0.6s ease-out 0.1s forwards;
+        }
+
+        .tiles-container {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            /* --- CHANGE: Reduced gap --- */
+            gap: 8px 15px;
+            /* --- CHANGE: Reduced width --- */
+            width: calc(80% - 30px); /* Takes less width, making tiles smaller */
+            padding: 0;
+            box-sizing: border-box;
+            margin: 0 auto; /* Center horizontally */
+            flex-grow: 1; /* Allows this to take up remaining vertical space */
+            min-height: 0; /* Important for flex-grow calculation */
+            /* --- CHANGE: Reduced bottom margin slightly --- */
+            margin-bottom: 8px; /* Space before bottom icons area */
+            overflow: hidden; /* Prevent internal overflow issues */
+        }
+
+        .tile {
+            width: 100%;
+            aspect-ratio: 1 / 1; /* Maintain square shape */
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0px 2px 5px var(--shadow-light);
+            cursor: pointer;
+            transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94), box-shadow 0.25s ease;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: block;
+            position: relative;
+             /* Staggered animation */
+             opacity: 0;
+             animation: scaleUp 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+        }
+        /* Stagger tile appearance */
+        .tile:nth-child(1) { animation-delay: 0.2s; }
+        .tile:nth-child(2) { animation-delay: 0.25s; }
+        .tile:nth-child(3) { animation-delay: 0.3s; }
+        .tile:nth-child(4) { animation-delay: 0.35s; }
+        .tile:nth-child(5) { animation-delay: 0.4s; }
+        .tile:nth-child(6) { animation-delay: 0.45s; }
+
+
+        .tile:hover {
+            transform: scale(1.04) translateY(-2px); /* Slightly less dramatic hover */
+            box-shadow: 0px 5px 10px var(--shadow-medium);
+        }
+
+        /* Optional: Tile hover overlay */
+        .tile::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(rgba(0,0,0,0), rgba(0,0,0,0.1));
+            opacity: 0;
+            transition: opacity 0.25s ease;
+             pointer-events: none; /* Allow clicks to go through */
+        }
+        .tile:hover::after {
+            opacity: 1;
+        }
+
+        .bottom-icons {
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-sizing: border-box;
+            background-color: white;
+            border-top: 1px solid #eee;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            flex-shrink: 0;
+             /* Added transition for hiding */
+             opacity: 1;
+             pointer-events: auto;
+             transition: opacity 0.3s ease-out;
+        }
+
+        .bottom-icons a {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .bottom-icons i {
+            color: lightgrey;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: color 0.15s ease-in-out, transform 0.15s ease-in-out; /* Added transform transition */
+        }
+
+        .bottom-icons i:hover {
+            color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+
+        .bottom-icons i.active {
+            color: var(--active-color);
+        }
+
+        /* --- Slide-out & User-Slide-out Styles --- */
+         .slide-out, .user-slide-out {
+            position: absolute;
+            top: 0;
+            left: 0; /* Both start from left, transform handles direction */
+            width: 100%;
+            height: 100%;
+            background-color: #fff;
+             transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            padding: 30px 20px 20px 20px; /* Adjusted padding */
+            box-sizing: border-box;
+            text-align: left;
+            overflow-y: auto; /* Allow scrolling within the panel */
+            will-change: transform;
+            border-radius: 30px; /* Match parent container's radius */
+            /* --- CHANGE: Increased z-index to be above top/bottom icons --- */
+            z-index: 25;
+         }
+
+        .slide-out {
+            transform: translateX(-100%);
+        }
+
+        .user-slide-out {
+             transform: translateX(100%);
+        }
+
+         .slide-out.active {
+             transform: translateX(0);
+         }
+
+        .user-slide-out.active {
+             transform: translateX(0);
+         }
+
+         /* Container shadow slightly different based on active slide */
+         .smartphone-container.slide-active {
+             box-shadow: 5px 8px 25px rgba(0, 0, 0, 0.2);
+         }
+         .smartphone-container.user-slide-active {
+             box-shadow: -5px 8px 25px rgba(0, 0, 0, 0.2);
+         }
+
+         /* --- NEW: Hide icons when slide is active --- */
+         .smartphone-container.slide-active .top-icons,
+         .smartphone-container.slide-active .bottom-icons,
+         .smartphone-container.slide-active .chatbot-icon,
+         .smartphone-container.user-slide-active .top-icons,
+         .smartphone-container.user-slide-active .bottom-icons,
+         .smartphone-container.user-slide-active .chatbot-icon {
+             opacity: 0;
+             pointer-events: none;
+             /* Optional: Slightly faster fade out */
+             transition: opacity 0.2s ease-out;
+         }
+         /* --- End New Hide Rules --- */
+
+
+        .slide-out h2, .user-slide-out h2 {
+            font-size: 1.4em; /* Adjusted */
+            margin-top: 10px; /* Space below close button */
+            margin-bottom: 15px;
+            color: var(--primary-color);
+            text-align: left;
+            animation: fadeInUp 0.5s ease-out 0.1s both;
+        }
+
+        .slide-out h3, .user-slide-out h3 {
+            font-size: 1.15em;
+            margin-top: 18px; /* Adjusted */
+            margin-bottom: 8px;
+            text-align: left;
+            color: var(--primary-color-dark);
+             animation: fadeInUp 0.5s ease-out 0.2s both;
+        }
+
+        .slide-out p, .user-slide-out p {
+            font-size: 0.9em; /* Adjusted */
+            margin-bottom: 5px;
+            text-align: left;
+            color: var(--dark-grey);
+             animation: fadeInUp 0.5s ease-out 0.3s both;
+             line-height: 1.4;
+        }
+
+         .hospital-list {
+            list-style-type: none;
+            padding-left: 0;
+             margin-top: 10px;
+             animation: fadeInUp 0.5s ease-out 0.4s both;
+        }
+
+        .hospital-list li {
+            margin-bottom: 8px;
+            text-align: left;
+            padding-left: 25px;
+            position: relative;
+             font-size: 0.9em;
+        }
+        .hospital-list li::before {
+            content: "\f479"; /* hospital icon */
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            color: var(--active-color);
+            position: absolute;
+            left: 0;
+            top: 3px; /* Adjust vertical alignment */
+             font-size: 1.1em;
+        }
+
+        /* Close Button Styling */
+         .close-button {
+             position: absolute;
+             top: 15px; /* Adjusted position */
+             right: 18px;
+             font-size: 1.7em;
+             color: var(--medium-grey);
+             cursor: pointer;
+             background: none;
+             border: none;
+             outline: none;
+             transition: color 0.2s ease, transform 0.2s ease;
+             /* --- CHANGE: Ensure close button is above slide content --- */
+             z-index: 26; /* Higher than slide panel's z-index */
+             padding: 5px; /* Increase clickable area slightly */
+             line-height: 1; /* Prevent extra space */
+         }
+
+        .close-button:hover {
+            color: var(--dark-grey);
+             transform: rotate(90deg) scale(1.1);
+        }
+
+
+        /* Animations */
+         @keyframes fadeInUp {
+             from { opacity: 0; transform: translateY(20px); }
+             to { opacity: 1; transform: translateY(0); }
+         }
+         @keyframes fadeIn {
+             from { opacity: 0; }
+             to { opacity: 1; }
+         }
+         @keyframes slideInLeft {
+              from { transform: translateX(-20px); opacity: 0; }
+             to { transform: translateX(0); opacity: 1; }
+         }
+          @keyframes scaleUp { /* For Tiles */
+              from { opacity: 0; transform: scale(0.8); }
+              to { opacity: 1; transform: scale(1); }
+         }
+         @keyframes rotateClock { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+         @keyframes progressBarFill { from { width: 0; } /* To value set dynamically */ }
+         @keyframes pulse {
+             0% { transform: scale(1); box-shadow: 0px 3px 6px var(--shadow-medium); }
+             50% { transform: scale(1.07); box-shadow: 0px 5px 10px var(--shadow-medium); }
+             100% { transform: scale(1); box-shadow: 0px 3px 6px var(--shadow-medium); }
+         }
+         @keyframes pop { from { transform: scale(1); } 50% { transform: scale(1.1); } to { transform: scale(1); } } /* Simpler Pop */
+
+
+         /* Tile Background Images */
+        .tile:nth-child(1) { background-image: url('https://i.ibb.co/fzsvGpTK/cb519f7233d2.png'); }
+        .tile:nth-child(2) { background-image: url('https://i.ibb.co/ds4vgLGZ/49c0f4a3f4b9.png'); }
+        .tile:nth-child(3) { background-image: url('https://i.ibb.co/Jw0VsQrd/3f464ccea130.png'); }
+        .tile:nth-child(4) { background-image: url('https://i.ibb.co/9mLh0Rtf/4c22ffafdeb7.png'); }
+        .tile:nth-child(5) { background-image: url('https://i.ibb.co/CKGxdJrJ/92ea899f0ac9.png'); }
+        .tile:nth-child(6) { background-image: url('https://i.ibb.co/35P54LjM/c57e69184c2d.png'); }
+
+
+        /* User Slide Out Specific Styles */
+         .logout-button {
+            background: rgba(58, 138, 122, 0.1);
+            border-radius: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08);
+            -webkit-backdrop-filter: blur(5px);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(58, 138, 122, 0.15);
+            padding: 10px 22px; /* Adjusted */
+            font-size: 0.95em;
+            font-weight: 500;
+            color: var(--primary-color-dark);
+            cursor: pointer;
+            transition: all 0.25s ease;
+            margin-top: 25px;
+            width: fit-content;
+            margin-left: auto;
+            margin-right: auto;
+            display: block;
+        }
+
+        .logout-button:hover {
+            background: rgba(58, 138, 122, 0.18);
+            border-color: rgba(58, 138, 122, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12);
+        }
+        .logout-button:active {
+             transform: translateY(0px) scale(0.98);
+             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .reminder-section, .health-progress-section {
+            margin-top: 20px;
+            text-align: left;
+            padding: 12px 15px; /* Adjusted */
+            background-color: rgba(240, 248, 245, 0.5); /* Very light teal tint */
+            border-radius: 10px;
+            border: 1px solid rgba(58, 138, 122, 0.1);
+            animation: fadeIn 0.6s ease-out 0.3s both;
+        }
+
+
+        .reminder-list {
+            list-style: none;
+            padding: 0;
+            margin: 5px 0 0 0; /* Space after heading */
+        }
+
+        .reminder-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 10px; /* Adjusted */
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+            animation: slideInLeft 0.5s ease-out backwards;
+             position: relative; /* For potential absolute elements later */
+        }
+        .reminder-item:last-child { margin-bottom: 0; }
+        .reminder-item:nth-child(1) { animation-delay: 0.4s; }
+        .reminder-item:nth-child(2) { animation-delay: 0.45s; }
+        .reminder-item:nth-child(3) { animation-delay: 0.5s; }
+        .reminder-item:nth-child(4) { animation-delay: 0.55s; }
+
+
+        .reminder-item i {
+            font-size: 1.3em;
+            color: var(--active-color);
+            margin-right: 10px;
+             flex-shrink: 0; /* Prevent icon shrinking */
+            animation: rotateClock 3.5s linear infinite;
+             animation-delay: 1s;
+        }
+
+        .reminder-item p {
+            font-size: 0.85em; /* Adjusted */
+            margin: 0;
+            color: #444; /* Darker text */
+             line-height: 1.3;
+             animation: none;
+        }
+
+         /* Health Progress Section */
+         .health-progress-section h3 { margin-bottom: 10px; }
+         .progress-bar {
+            height: 10px; /* Slightly slimmer */
+            background-color: #e8e8e8;
+            border-radius: 5px;
+            margin-top: 0; /* Reduced space */
+            overflow: hidden;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.08);
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            /* width: 50%; Set via JS or inline style */
+            background: linear-gradient(90deg, var(--active-color), #5fc4aa); /* Adjusted gradient */
+            border-radius: 5px;
+             transition: width 1.2s cubic-bezier(0.65, 0, 0.35, 1); /* Smoother transition */
+             /* Removed animation, rely on transition */
+        }
+
+        .day-labels {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7em;
+            margin-top: 6px;
+            color: #888; /* Lighter labels */
+        }
+        .day-labels span {
+            flex: 1;
+            text-align: center;
+        }
+
+
+        /* Chatbot Icon Styles */
+         .chatbot-icon {
+            position: absolute;
+            bottom: 75px; /* Adjust this value based on visual preference */
+            right: 20px;
+            width: 42px; /* Adjusted */
+            height: 42px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.3em;
+            cursor: pointer;
+            box-shadow: 0px 4px 10px var(--shadow-medium);
+            transition: transform 0.2s ease, background-color 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease-out; /* Added opacity */
+            /* --- CHANGE: Adjusted z-index relative to slides --- */
+            z-index: 20; /* Below slides/chatbot page, above main content */
+            animation: pulse 2.5s infinite ease-in-out;
+             animation-delay: 1.5s;
+             /* Added transition properties */
+             opacity: 1;
+             pointer-events: auto;
+        }
+
+        .chatbot-icon:hover {
+            transform: scale(1.1);
+            background-color: var(--primary-color-dark);
+            box-shadow: 0px 6px 15px var(--shadow-medium);
+             animation-play-state: paused;
+        }
+
+
+        /* Chatbot Page Styles */
+        .chatbot-page {
+            position: absolute;
+            inset: 0;
+            background-color: rgba(255, 255, 255, 0.92); /* Slightly adjusted opacity */
+            -webkit-backdrop-filter: blur(7px);
+            backdrop-filter: blur(7px);
+            /* --- CHANGE: Highest z-index --- */
+            z-index: 30;
+            display: none;
+            flex-direction: column;
+             /* No padding here, handled internally */
+            box-sizing: border-box;
+            opacity: 0;
+             transition: opacity 0.3s ease-out; /* Faster fade */
+            border-radius: 30px; /* Match container */
+             will-change: opacity;
+        }
+
+        .chatbot-page.active {
+            display: flex;
+            opacity: 1;
+        }
+
+         .chatbot-header-container {
+             padding: 15px 20px 10px 20px; /* Adjusted */
+             border-bottom: 1px solid #eee;
+             position: relative;
+             background-color: rgba(255,255,255, 0.75);
+             border-top-left-radius: 30px; /* Keep radius */
+             border-top-right-radius: 30px;
+              flex-shrink: 0; /* Prevent shrinking */
+              /* Ensure header content is above backdrop */
+              z-index: 31;
+         }
+
+        .chatbot-header {
+            text-align: center;
+            margin: 0; /* Reset margin */
+            padding-right: 20px; /* Space for close button */
+            color: var(--primary-color);
+            font-size: 1.2em; /* Adjusted size */
+            font-weight: 600;
+        }
+
+        .chatbot-messages {
+            flex-grow: 1; /* Take remaining space */
+            overflow-y: auto; /* Allow scrolling messages */
+            padding: 15px;
+             min-height: 0; /* Critical for flex layout */
+        }
+
+        .message {
+            padding: 9px 14px; /* Adjusted padding */
+            border-radius: 16px;
+            margin-bottom: 8px;
+            clear: both;
+            word-wrap: break-word;
+            max-width: 80%;
+            line-height: 1.35;
+            font-size: 0.88em; /* Adjusted */
+             opacity: 0;
+             animation: fadeInUp 0.4s ease-out forwards;
+             position: relative; /* For potential future additions */
+        }
+        /* Stagger message appearance */
+        .message:nth-last-child(-n+3) { animation-delay: 0.05s; }
+        .message:nth-last-child(-n+2) { animation-delay: 0.1s; }
+        .message:nth-last-child(-n+1) { animation-delay: 0.15s; }
+
+
+        .user-message {
+            background-color: #e0f1db; /* Softer green */
+            float: right;
+            text-align: left;
+            color: #333;
+            border-bottom-right-radius: 6px;
+        }
+
+        .bot-message {
+            background-color: #eef0f1; /* Softer grey */
+            float: left;
+            text-align: left;
+            color: #333;
+            border-bottom-left-radius: 6px;
+        }
+
+        .chatbot-input-area {
+            display: grid;
+            grid-template-columns: auto 1fr auto;
+            grid-column-gap: 8px;
+            padding: 10px 15px; /* Adjusted */
+            align-items: center;
+            background-color: rgba(255, 255, 255, 0.85);
+             border-top: 1px solid #eee;
+             flex-shrink: 0; /* Prevent shrinking */
+             border-bottom-left-radius: 30px; /* Match container */
+             border-bottom-right-radius: 30px;
+             /* Ensure input area is above backdrop */
+             position: relative;
+             z-index: 31;
+        }
+
+        .chatbot-button {
+            background-color: transparent;
+            border: 1px solid #d0d0d0; /* Slightly lighter border */
+            outline: none;
+            cursor: pointer;
+            color: var(--dark-grey);
+            font-size: 1.05em; /* Adjusted */
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+             flex-shrink: 0;
+        }
+
+        .chatbot-button:hover {
+            background-color: var(--light-grey);
+            border-color: var(--dark-grey);
+            color: var(--primary-color);
+        }
+
+         .chatbot-button:active {
+            transform: scale(0.95);
+             background-color: #e5e5e5;
+        }
+
+         .chatbot-send-button {
+            background-color: var(--active-color);
+            border-color: var(--active-color);
+            color: white;
+         }
+          .chatbot-send-button:hover {
+             background-color: var(--primary-color-dark);
+             border-color: var(--primary-color-dark);
+             color: white;
+          }
+
+
+        .chatbot-input {
+            padding: 8px 15px; /* Adjusted */
+            border: 1px solid var(--medium-grey);
+            border-radius: 18px; /* Match messages */
+            font-size: 0.9em; /* Adjusted */
+             flex-grow: 1;
+             transition: border-color 0.2s ease, box-shadow 0.2s ease;
+             font-family: inherit;
+             min-width: 0; /* Prevent overflow in grid */
+        }
+        .chatbot-input:focus {
+             outline: none;
+             border-color: var(--primary-color);
+             box-shadow: 0 0 0 2px rgba(58, 138, 122, 0.15);
+        }
+
+
+        .chatbot-close-button {
+            position: absolute;
+             top: 13px; /* Fine-tune vertical alignment */
+             left: 15px; /* Adjusted */
+             font-size: 1.6em; /* Adjusted */
+             color: var(--medium-grey);
+             cursor: pointer;
+             background: none;
+             border: none;
+             outline: none;
+             transition: color 0.2s ease, transform 0.2s ease;
+             /* --- CHANGE: Ensure above chatbot header content */
+             z-index: 32;
+              padding: 5px; /* Click area */
+              line-height: 1;
+         }
+
+         .chatbot-close-button:hover {
+             color: var(--dark-grey);
+              transform: rotate(-90deg) scale(1.1);
+         }
+
+
+         /* Loading Animation Styles */
+         .loading-dots {
+            display: flex;
+            align-items: center;
+            margin-bottom: 8px;
+            padding: 9px 15px;
+            max-width: 80%;
+            float: left;
+             clear: both;
+         }
+         .loading-dots.hidden {
+            display: none !important;
+         }
+
+         .loading-dots span {
+            width: 6px; /* Slightly smaller */
+            height: 6px;
+            background-color: #a9a9a9;
+            border-radius: 50%;
+            margin: 0 2.5px; /* Adjusted spacing */
+            animation: dot-pulse 1.1s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+         }
+         .loading-dots span:nth-child(1) { animation-delay: 0s; }
+         .loading-dots span:nth-child(2) { animation-delay: 0.18s; }
+         .loading-dots span:nth-child(3) { animation-delay: 0.36s; }
+
+        @keyframes dot-pulse {
+             0%, 80%, 100% { opacity: 0.3; transform: scale(0.7); }
+             40% { opacity: 1; transform: scale(1); }
+        }
+
+
+        .hidden {
+          display: none !important;
+        }
+
+    </style>
+</head>
+
+<body>
+    <!-- Added clinic-page wrapper for background -->
+    <div class="clinic-page">
+        <div class="smartphone-container">
+
+            <div class="top-icons">
+                <i class="fas fa-bars menu-icon"></i>
+                <i class="fas fa-user-circle user-icon"></i>
+            </div>
+
+            <!-- Video Container -->
+            <div class="video-container">
+                 <video class="clinic-video" src="https://media-hosting.imagekit.io/04ba243af1304a88/lv_0_20250331172033.mp4?Expires=1838030174&Key-Pair-Id=K2ZIVPTIP2VGHC&Signature=cBJfrpVETIMJSbyNzm~Ew7bO9XRVvHQmqZgtPV-jm2Srnh62x22nugBvhIS7azcbGJaXGpJX6k~Rzr4srYLBWODR32OT6bTZCJgZT9tHM6NCPd1cyqa2-WsS4CqoFLgP85EjgHxSnNd079etPw07H48TRAWNmJ0Z7fn47u1qac65d8qi47L84xmLEBfXV0fwvFdMA6JPayDiOcJtnRx858QawxUjAPIhHOxIM2S2trS2pu97cYn90-anVgLyR0od3LlUJBJ86LV~YxganYxIwPU6lMu~3blVlJdSeZxEVCbck2sEX1kiJuTDNOLvu-8EaAlGvByzkAspe~zqdHor4A__" autoplay loop muted playsinline></video>
+            </div>
+
+            <h1 class="micro-clinic-heading">Micro Clinic</h1>
+
+            <div class="tiles-container">
+                 <!-- Tile Links remain the same -->
+                 <a href="{{ url_for('blood_pressure') }}" class="tile" title="Blood Pressure"></a>
+                <a href="{{ url_for('sugar_test') }}" class="tile" title="Sugar Test"></a>
+                <a href="{{ url_for('periods') }}" class="tile" title="Periods"></a>
+                <a href="{{ url_for('pregnancy') }}" class="tile" title="Pregnancy"></a>
+                <a href="{{ url_for('nutrition') }}" class="tile" title="Nutrition"></a>
+                <a href="{{ url_for('cbc') }}" class="tile" title="Complete Blood Count"></a>
+            </div>
+
+             <!-- Bottom Icons -->
+             <div class="bottom-icons">
+                 <!-- Bottom Icon Links remain the same -->
+                <a href="{{ url_for('clinic') }}" title="Clinic Home"><i class="fas fa-clinic-medical active"></i></a>
+                <a href="{{ url_for('checkup') }}" title="Checkup"><i class="fas fa-notes-medical"></i></a>
+                <a href="{{ url_for('blood_test') }}" title="Blood Test"><i class="fas fa-tint"></i></a>
+                <a href="{{ url_for('report') }}" title="Reports"><i class="fas fa-file-alt"></i></a>
+             </div>
+
+
+            <!-- Left Slide-out Section -->
+            <div class="slide-out">
+                <button class="close-button">×</button>
+                 <h2>Hello User!</h2>
+                 <p>Location: Rourkela, Odisha</p>
+
+                 <h3>Nearby Hospitals</h3>
+                 <ul class="hospital-list">
+                     <li>RGH: 3km</li>
+                     <li>Vesaj Patel Hospital: 5km</li>
+                     <li>Lifeline Hospital: 5.5km</li>
+                 </ul>
+                 <!-- Add more content here if needed, it will scroll -->
+            </div>
+
+            <!-- Right Slide-out Section (User Profile) -->
+             <div class="user-slide-out">
+                <button class="close-button">×</button>
+                <h2>User Profile</h2>
+                 <p>User Id: JEEV3317</p>
+                 <p>Age: 22yr</p>
+                 <p>Gender: Female</p>
+                 <p>Height: 173 cm</p>
+                 <p>Weight: 71 kg</p>
+
+                 <div class="reminder-section">
+                     <h3>Reminders</h3>
+                     <ul class="reminder-list">
+                         <li class="reminder-item">
+                             <i class="far fa-clock"></i>
+                             <p>Antiobatic: 08:00 am & 10:00 pm AF</p>
+                         </li>
+                         <li class="reminder-item">
+                             <i class="far fa-clock"></i>
+                             <p>Paracetamol: 08:00 am & 10:00 pm AF</p>
+                         </li>
+                         <li class="reminder-item">
+                             <i class="far fa-clock"></i>
+                             <p>Mancold: 09:00 pm AF</p>
+                         </li>
+                         <li class="reminder-item">
+                             <i class="far fa-clock"></i>
+                             <p>Gasonix: 08:00 am & 10:00 am BF</p>
+                         </li>
+                     </ul>
+                 </div>
+
+                 <div class="health-progress-section">
+                     <h3>Your Health Progress (Week)</h3>
+                     <div class="progress-bar">
+                          <!-- Set width dynamically (JS/Backend) or keep fixed example -->
+                         <div class="progress-bar-fill" style="width: 65%;"></div>
+                     </div>
+                     <div class="day-labels">
+                         <span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span><span>Sun</span>
+                     </div>
+                 </div>
+
+                 <form method="post" action="{{ url_for('logout') }}">
+                   <button type="submit" class="logout-button">Logout</button>
+                 </form>
+                 <!-- Add more content here if needed, it will scroll -->
+             </div>
+
+
+            <!-- Chatbot Icon -->
+            <div class="chatbot-icon" title="AI Assistant">
+                <i class="fas fa-robot"></i>
+            </div>
+
+
+             <!-- Chatbot Page -->
+             <div class="chatbot-page">
+                 <div class="chatbot-header-container">
+                     <button class="chatbot-close-button">×</button>
+                     <h2 class="chatbot-header">Micro Clinic AI Assistant</h2>
+                 </div>
+
+                 <div class="chatbot-messages">
+                     <div class="message bot-message">Hi there! Ask me about your health concerns or clinic services.</div>
+                     <!-- More messages loaded dynamically -->
+                 </div>
+
+                 <div class="loading-dots hidden">
+                     <span></span><span></span><span></span>
+                 </div>
+
+                 <div class="chatbot-input-area">
+                     <button class="chatbot-clear-button chatbot-button" title="Clear Chat">
+                         <i class="fas fa-broom"></i>
+                     </button>
+                     <input type="text" class="chatbot-input" placeholder="Ask something...">
+                     <button class="chatbot-send-button chatbot-button" title="Send">
+                         <i class="fas fa-paper-plane"></i>
+                     </button>
+                 </div>
+             </div>
+
+        </div> <!-- End smartphone-container -->
+    </div> <!-- End clinic-page -->
+
+
+    <script>
+        // --- Selectors ---
+        const smartphoneContainer = document.querySelector('.smartphone-container');
+        const menuIcon = document.querySelector('.menu-icon');
+        const userIcon = document.querySelector('.user-icon');
+        const bottomIconContainer = document.querySelector('.bottom-icons');
+
+        // Slide-out Panels
+        const slideOut = document.querySelector('.slide-out');
+        const userSlideOut = document.querySelector('.user-slide-out');
+        const closeButtons = document.querySelectorAll('.close-button'); // Selects close buttons in both panels
+
+        // Chatbot Elements
+        const chatbotIcon = document.querySelector('.chatbot-icon');
+        const chatbotPage = document.querySelector('.chatbot-page');
+        const chatbotCloseButton = document.querySelector('.chatbot-close-button');
+        const chatbotClearButton = document.querySelector('.chatbot-clear-button');
+        const chatbotMessages = document.querySelector('.chatbot-messages');
+        const chatbotInput = document.querySelector('.chatbot-input');
+        const chatbotSendButton = document.querySelector('.chatbot-send-button');
+        const loadingDots = document.querySelector('.loading-dots');
+
+        // --- Event Listeners ---
+
+        // Bottom Navigation Active State Handling
+        bottomIconContainer.addEventListener('click', function(event) {
+            // Find the closest anchor tag (link)
+            const link = event.target.closest('a');
+            if (link && bottomIconContainer.contains(link)) {
+                // Remove 'active' from all icons within the container
+                bottomIconContainer.querySelectorAll('i').forEach(icon => {
+                    icon.classList.remove('active');
+                 });
+                // Add 'active' to the icon inside the clicked link
+                const iconInLink = link.querySelector('i');
+                if(iconInLink) {
+                   iconInLink.classList.add('active');
+                }
+                // Note: Navigation itself should happen via the href attribute
+            }
+        });
+
+
+        // Open Left Slide-out
+        menuIcon.addEventListener('click', (e) => {
+            e.stopPropagation(); // Prevent triggering clicks on underlying elements
+            closeAllSlides(userSlideOut); // Close the other slide if open
+            slideOut.classList.add('active');
+            smartphoneContainer.classList.add('slide-active'); // Add class to container
+        });
+
+        // Open Right Slide-out
+        userIcon.addEventListener('click', (e) => {
+            e.stopPropagation();
+            closeAllSlides(slideOut); // Close the other slide if open
+            userSlideOut.classList.add('active');
+            smartphoneContainer.classList.add('user-slide-active'); // Add class to container
+        });
+
+        // Close Slide-out Panels using their buttons
+        closeButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                 e.stopPropagation();
+                 // Find the parent panel and close it
+                 const panelToClose = e.target.closest('.slide-out, .user-slide-out');
+                 closeSlide(panelToClose);
+            });
+        });
+
+         // Close Slide-outs if clicking outside the active panel *but inside the smartphone*
+        smartphoneContainer.addEventListener('click', (e) => {
+            // Check if a slide is active AND the click was not inside the active slide itself
+            // AND the click was not on the icon that opens the slide
+            if (slideOut.classList.contains('active') && !slideOut.contains(e.target) && !menuIcon.contains(e.target)) {
+                closeSlide(slideOut);
+            } else if (userSlideOut.classList.contains('active') && !userSlideOut.contains(e.target) && !userIcon.contains(e.target)) {
+                closeSlide(userSlideOut);
+            }
+             // Also check if chatbot is active and click is outside its elements
+             else if (chatbotPage.classList.contains('active') &&
+                 !chatbotPage.contains(e.target) &&
+                 !chatbotIcon.contains(e.target))
+                 {
+                 // Close chatbot on outside click (optional, enable if desired)
+                 // chatbotPage.classList.remove('active');
+            }
+        });
+
+        // --- Chatbot Interaction ---
+        chatbotIcon.addEventListener('click', (e) => {
+             e.stopPropagation();
+             closeAllSlides(); // Close side panels when opening chat
+             chatbotPage.classList.add('active');
+             chatbotInput.focus(); // Focus input when opening
+        });
+
+        chatbotCloseButton.addEventListener('click', (e) => {
+             e.stopPropagation();
+             chatbotPage.classList.remove('active');
+        });
+
+        chatbotClearButton.addEventListener('click', () => {
+            chatbotMessages.innerHTML = '<div class="message bot-message">Chat cleared. How can I help?</div>'; // Reset with a message
+            loadingDots.classList.add('hidden'); // Ensure loading dots are hidden
+            chatbotInput.focus();
+             scrollToBottom(); // Scroll to the new message
+        });
+
+        chatbotSendButton.addEventListener('click', sendMessage);
+        chatbotInput.addEventListener('keypress', (event) => {
+            if (event.key === 'Enter' && !event.shiftKey) {
+                event.preventDefault();
+                sendMessage();
+            }
+        });
+
+        // --- Helper Functions ---
+
+        // Closes a specific slide panel
+        function closeSlide(panelElement) {
+            if (panelElement && panelElement.classList.contains('active')) {
+                panelElement.classList.remove('active');
+                // Remove the corresponding shadow/state class from the container
+                if (panelElement.classList.contains('slide-out')) {
+                    smartphoneContainer.classList.remove('slide-active');
+                } else if (panelElement.classList.contains('user-slide-out')) {
+                     smartphoneContainer.classList.remove('user-slide-active');
+                 }
+            }
+        }
+
+        // Closes all *other* specified slide panels
+        function closeAllSlides(...panelsToKeepOpen) {
+             const allPanels = [slideOut, userSlideOut];
+             allPanels.forEach(panel => {
+                 // If this panel is not in the list to keep open, close it
+                 if (!panelsToKeepOpen.includes(panel)) {
+                     closeSlide(panel);
+                 }
+             });
+         }
+
+        // Scroll chat messages to the bottom
+        function scrollToBottom() {
+            // Use requestAnimationFrame for smoother scrolling after render
+             requestAnimationFrame(() => {
+                chatbotMessages.scrollTop = chatbotMessages.scrollHeight;
+            });
+        }
+
+        // Add a message to the chat display
+         function addMessage(text, sender) {
+             const messageDiv = document.createElement('div');
+             messageDiv.classList.add('message', `${sender}-message`);
+             // Simple text setting (prevents basic XSS, use library for production)
+             messageDiv.textContent = text;
+             chatbotMessages.appendChild(messageDiv);
+             scrollToBottom(); // Scroll after adding the message
+         }
+
+        // Handles sending message and getting response
+        async function sendMessage() {
+             const messageText = chatbotInput.value.trim();
+             if (messageText === '') return;
+
+             addMessage(messageText, 'user');
+             chatbotInput.value = '';
+             chatbotInput.focus();
+             loadingDots.classList.remove('hidden');
+              // Move loading dots into view
+              scrollToBottom(); // Scroll to show loading dots start
+
+              try {
+                const botResponse = await getBotResponse(messageText);
+                addMessage(botResponse, 'bot');
+             } catch (error) {
+                 console.error('Chatbot Fetch Error:', error);
+                  addMessage("Sorry, something went wrong. Please try again.", 'bot'); // Display user-friendly error
+              } finally {
+                 loadingDots.classList.add('hidden');
+                  // Ensure scroll happens *after* final message + loading dots removal
+                  scrollToBottom();
+              }
+         }
+
+         // Fetches response from the backend (with min delay)
+         async function getBotResponse(userMessage) {
+              const formData = new FormData();
+              formData.append('message', userMessage);
+
+               // Minimum "thinking" time (e.g., 600ms) improves perceived responsiveness
+              const minWait = new Promise(resolve => setTimeout(resolve, 600));
+
+              const fetchPromise = fetch('/get_chatbot_response', { // Ensure this URL matches your Flask endpoint
+                  method: 'POST',
+                  body: formData
+              })
+              .then(response => {
+                  if (!response.ok) {
+                      // Throw an error with status to handle specific HTTP errors
+                      throw new Error(`HTTP error ${response.status}: ${response.statusText}`);
+                  }
+                   return response.json();
+              })
+              .then(data => {
+                  if (data && data.response) {
+                      return data.response; // Success case
+                  } else {
+                       // Handle cases where backend gives 200 OK but invalid JSON format
+                       throw new Error("Invalid response format from server.");
+                   }
+              });
+
+               // Wait for both the fetch/processing AND the minimum delay
+               // Using await makes catching errors from the fetchPromise easier
+               await minWait; // Ensure minimum delay happens regardless of fetch speed
+              return await fetchPromise; // Return the result (or throw the error) from fetch
+         }
+
+         // Ensure initial scroll state is correct if messages exist on load
+        // (Could be uncommented if backend pre-populates chat)
+        // window.addEventListener('load', scrollToBottom);
+
+    </script>
+
+</body>
+</html>
