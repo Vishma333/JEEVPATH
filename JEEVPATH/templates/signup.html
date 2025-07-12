@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Sign Up</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" />
+    <style>
+        /* === KEYFRAMES FOR ANIMATION === */
+        @keyframes slideUpFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(15px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            background-color: #f0f0f0;
+            overflow: hidden; /* Prevent scrollbars during animation */
+        }
+
+        .signup-page { /* Renamed for clarity */
+            background-image: url('https://i.supaimg.com/70ab70c4-ba48-4034-bd2a-555a5e548ae4.png');
+            background-size: cover;
+            background-position: center;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* === CONTAINER SIZE & STYLE UPDATED FOR CONSISTENCY === */
+        .smartphone-container {
+            width: 320px;
+            height: 568px; 
+            padding: 30px; 
+            border: 0.5px solid rgba(0, 0, 0, 0.2); /* Added border from login.html */
+            border-radius: 30px;
+            background-color: white;
+            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        /* === HEADING STYLES UPDATED FOR CONSISTENCY === */
+        .signup-heading {
+            color: #3a8a7a;
+            font-size: 2.2em;
+            margin-bottom: 25px;
+            font-weight: 600;
+            animation: slideUpFadeIn 0.5s ease-out forwards;
+        }
+
+        /* === FORM GROUP AND INPUTS ENHANCED WITH ICONS & ANIMATIONS === */
+        .form-group {
+            position: relative;
+            width: 100%;
+            margin-bottom: 18px;
+            text-align: left;
+            /* Staggered animation for each form group */
+            opacity: 0; /* Start hidden */
+            animation: slideUpFadeIn 0.5s ease-out forwards;
+        }
+
+        .form-group:nth-of-type(1) { animation-delay: 0.1s; }
+        .form-group:nth-of-type(2) { animation-delay: 0.2s; }
+        .form-group:nth-of-type(3) { animation-delay: 0.3s; }
+        .form-group:nth-of-type(4) { animation-delay: 0.4s; }
+
+        .form-group label {
+            font-weight: 500;
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9em;
+            color: #555;
+            padding-left: 10px;
+        }
+
+        .form-group .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 55%;
+            color: #aaa;
+            font-size: 0.9em;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px 12px 45px; /* Added left padding for icon */
+            border: 1px solid #ddd;
+            border-radius: 25px;
+            font-size: 1em;
+            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .form-group input:focus {
+            border-color: #3a8a7a;
+            box-shadow: 0 0 5px rgba(58, 138, 122, 0.2);
+        }
+
+        .password-toggle {
+            position: absolute;
+            right: 20px;
+            top: 55%;
+            cursor: pointer;
+            color: #777;
+        }
+
+        /* === BUTTON STYLES UPDATED FOR CONSISTENCY === */
+        .signup-button {
+            background-color: #c7fff1;
+            border: none;
+            color: #3a8a7a;
+            padding: 15px 40px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-size: 1em;
+            width: 100%;
+            font-weight: 500;
+            margin-top: 15px;
+            transition: 0.3s;
+            opacity: 0; /* Start hidden for animation */
+            animation: slideUpFadeIn 0.5s ease-out 0.5s forwards;
+        }
+
+        .signup-button:hover {
+            background-color: #a5fff2;
+            transform: scale(1.03);
+            box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        /* === NEW STYLES FOR THE LOGIN LINK === */
+        .login-link-container {
+            margin-top: 25px;
+            font-size: 0.9em;
+            color: #555;
+            opacity: 0; /* Start hidden for animation */
+            animation: slideUpFadeIn 0.5s ease-out 0.6s forwards;
+        }
+        
+        .login-link-container p {
+             margin: 0;
+        }
+
+        .login-link-container a {
+            color: #3a8a7a;
+            font-weight: 600;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        .login-link-container a:hover {
+            text-decoration: underline;
+        }
+
+        /* === FLASH MESSAGE STYLES COPIED FOR CONSISTENCY === */
+        .flash-message {
+            padding: 10px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            width: 100%;
+            box-sizing: border-box;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+        }
+        .flash-success { background-color: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .flash-danger { background-color: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .flash-warning { background-color: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+        .flash-info { background-color: #d1ecf1; color: #0c5460; border: 1px solid #bee5eb; }
+
+    </style>
+</head>
+
+<body>
+    <div class="signup-page">
+        <div class="smartphone-container">
+            <h1 class="signup-heading">Create Account</h1>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+            {% for category, message in messages %}
+            <div class="flash-message flash-{{ category }}">
+                {{ message }}
+            </div>
+            {% endfor %}
+            {% endif %}
+            {% endwith %}
+
+            <form action="{{ url_for('signup') }}" method="POST">
+                <div class="form-group">
+                    <label for="name">Full Name</label>
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" name="name" id="name" placeholder="Krishn Daas" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="age">Age</label>
+                     <i class="fas fa-birthday-cake input-icon"></i>
+                    <input type="number" name="age" id="age" min="1" placeholder="22" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="email">Email ID</label>
+                    <i class="fas fa-envelope input-icon"></i>
+                    <input type="email" name="email" id="email" placeholder="you@example.com" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <i class="fas fa-lock input-icon"></i>
+                    <input type="password" name="password" id="password" placeholder="Min. 8 characters" required>
+                    <i class="fas fa-eye password-toggle" id="password-toggle"></i>
+                </div>
+
+                <button type="submit" class="signup-button">Create Account</button>
+            </form>
+            
+            <div class="login-link-container">
+                <p>Already have an account? <a href="{{ url_for('login_page') }}">Log In</a></p>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const passwordInput = document.getElementById("password");
+            const passwordToggle = document.getElementById("password-toggle");
+            // Select all flash messages
+            const flashMessages = document.querySelectorAll(".flash-message");
+
+            if(passwordToggle) {
+                passwordToggle.addEventListener("click", function () {
+                    const type = passwordInput.getAttribute('type') === "password" ? "text" : "password";
+                    passwordInput.setAttribute('type', type);
+                    this.classList.toggle("fa-eye-slash");
+                });
+            }
+
+            // Fade out all flash messages
+            if (flashMessages) {
+                flashMessages.forEach(function(flashMessage) {
+                    setTimeout(function () {
+                        flashMessage.style.opacity = '0';
+                        setTimeout(function() {
+                          flashMessage.style.display = 'none';
+                        }, 500); // 0.5s to match CSS transition
+                    }, 3000); // Increased time to 3 seconds for readability
+                });
+            }
+        });
+    </script>
+</body>
+
+</html>

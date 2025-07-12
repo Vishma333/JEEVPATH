@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Page</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!--  Prevent caching -->
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            overflow: hidden;
+            background-color: #f0f0f0;
+        }
+
+        .login-page {
+            background-image: url('https://i.supaimg.com/70ab70c4-ba48-4034-bd2a-555a5e548ae4.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .smartphone-container {
+            width: 320px;
+            height: 568px;
+            padding: 30px;
+            border: 0.5px solid rgba(0, 0, 0, 0.2);
+            border-radius: 30px;
+            background-color: white;
+            text-align: center;
+            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden; /* Prevent content from overflowing during loading */
+        }
+
+        #loading-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: white; /* Opaque white, hides the login options */
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            transition: opacity 0.7s ease; /* Slightly longer fade */
+            opacity: 1;
+        }
+
+        #loading-screen.hidden {
+            opacity: 0;
+            pointer-events: none; /* Ensure clicks pass through */
+        }
+
+        #loading-logo {
+            width: 120px; /* Slightly larger logo */
+            height: auto;
+            filter: blur(5px); /* Initial blur effect */
+            opacity: 0; /* Initially invisible */
+            animation: revealLogo 1.5s forwards, pulse 2s infinite alternate; /* Animate reveal and pulse */
+        }
+
+        @keyframes revealLogo {
+            0% { filter: blur(5px); opacity: 0; transform: scale(0.8); }
+            60% { filter: blur(3px); opacity: 0.5; transform: scale(1.05);}
+            100% { filter: blur(0); opacity: 1; transform: scale(1); }
+        }
+
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+
+        .welcome-heading,
+        .button-container,
+        .register-link {
+            opacity: 0; /* Initially hide these elements */
+            transition: opacity 0.7s ease; /* Fade in after loading */
+        }
+
+        .smartphone-container.loaded .welcome-heading,
+        .smartphone-container.loaded .button-container,
+        .smartphone-container.loaded .register-link {
+            opacity: 1; /* Fade in these elements when loaded */
+        }
+
+        /* Rest of your existing styles... */
+        .button-container {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .user-button,
+        .admin-button {
+            background-color: #c7fff1;
+            border: none;
+            color: #3a8a7a;
+            padding: 15px 40px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            font-size: 1em;
+            transition: background-color 0.3s ease, transform 0.3s, box-shadow 0.3s;
+            width: 100%;
+            box-sizing: border-box;
+            font-weight: 500;
+        }
+
+        .user-button:hover,
+        .admin-button:hover {
+            background-color: #a5fff2;
+            transform: scale(1.03);
+            box-shadow: 0px 3px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .or-divider {
+            text-align: center;
+            margin: 15px 0;
+            color: black;
+            font-family: 'Bricolage Grotesque', sans-serif;
+        }
+
+        .register-link {
+            margin-top: 20px;
+            font-size: 0.9em;
+            font-family: 'Bricolage Grotesque', sans-serif;
+        }
+
+        .register-link a {
+            color: #3a8a7a;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .register-link a:hover {
+            text-decoration: underline;
+            color: #2a645a;
+        }
+
+    </style>
+</head>
+
+<body>
+
+    <div class="login-page">
+        <div class="smartphone-container">
+            <div id="loading-screen">
+                <img id="loading-logo" src="https://i.ibb.co/1JwYKchG/a728676864c8.png" alt="Loading...">
+            </div>
+
+            <h1 class="welcome-heading">Welcome!</h1>
+
+            <div class="button-container">
+                <button class="user-button">Continue as User</button>
+                <div class="or-divider">Or</div>
+                <button class="admin-button">Continue as Admin</button>
+            </div>
+
+            <p class="register-link">
+                
+            </p>
+        </div>
+    </div>
+
+    <script>
+        function hideLoadingScreen() {
+            const loadingScreen = document.getElementById('loading-screen');
+            const smartphoneContainer = document.querySelector('.smartphone-container');
+
+            loadingScreen.classList.add('hidden');
+            smartphoneContainer.classList.add('loaded'); // Show content after loading
+        }
+
+        window.addEventListener('load', () => {
+            setTimeout(hideLoadingScreen, 2000); // Longer loading time for effect
+        });
+
+        document.querySelector(".user-button").addEventListener("click", function () {
+            window.location.href = "/login?type=user";
+        });
+
+        document.querySelector(".admin-button").addEventListener("click", function () {
+            window.location.href = "/login?type=admin";
+        });
+    </script>
+
+</body>
+
+</html>

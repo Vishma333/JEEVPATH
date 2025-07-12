@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sugar Test Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+       :root {
+            --primary-color: #3a8a7a;
+            --primary-color-dark: #26826b;
+            --light-grey: #f0f0f0;
+            --medium-grey: #ccc;
+            --dark-grey: #555;
+            --active-color: #30a88a;
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --shadow-medium: rgba(0, 0, 0, 0.15);
+            --danger-color: #e53935;
+            --danger-color-light: #fbe9e7;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            overflow: hidden;
+            background-color: var(--light-grey);
+        }
+
+        .clinic-page {
+            background-image: url('https://i.supaimg.com/70ab70c4-ba48-4034-bd2a-555a5e548ae4.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .smartphone-container {
+            width: 320px;
+            height: 568px;
+            padding: 30px;
+            border: 0.5px solid rgba(0, 0, 0, 0.2);
+            border-radius: 30px;
+            background-color: white;
+            text-align: center;
+            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            position: relative;
+            overflow: hidden;
+            transition: box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .top-icons {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 7px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 20;
+            flex-shrink: 0;
+            opacity: 1;
+            pointer-events: auto;
+            transition: opacity 0.3s ease-out;
+        }
+
+        .top-icons i {
+            color: lightgrey;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        .top-icons i:hover {
+            color: var(--active-color);
+            transform: scale(1.1);
+        }
+
+        .loading-spinner {
+            font-size: 0.8em;
+            margin-right: 8px;
+        }
+
+        .content-wrapper {
+            flex-grow: 1;
+            overflow-y: auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .content-wrapper::-webkit-scrollbar {
+            display: none;
+        }
+
+        .bottom-icons {
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-sizing: border-box;
+            background-color: white;
+            border-top: 1px solid #eee;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            margin-top: auto;
+            flex-shrink: 0;
+            opacity: 1;
+            pointer-events: auto;
+            transition: opacity 0.3s ease-out;
+        }
+
+        .bottom-icons a {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .bottom-icons i {
+            color: lightgrey;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: color 0.15s ease-in-out, transform 0.15s ease-in-out;
+        }
+        .bottom-icons i:hover {
+            color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+        .bottom-icons i.active {
+            color: var(--active-color);
+        }
+
+        .sugar-test-heading {
+            font-size: 1.6em;
+            font-weight: 600;
+            color: var(--primary-color);
+            text-align: center;
+            width: 100%;
+            margin-top: 15px;
+            margin-bottom: 20px;
+        }
+
+        .input-container, .select-container {
+            width: 100%;
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .input-container label, .select-container label {
+            display: block;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            color: var(--dark-grey);
+            padding-left: 10px;
+        }
+
+        .input-container input, .select-container select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid var(--medium-grey);
+            border-radius: 25px;
+            box-sizing: border-box;
+            font-size: 1em;
+            box-shadow: inset 0 1px 3px var(--shadow-light);
+            font-family: 'Bricolage Grotesque', sans-serif;
+        }
+
+        .select-container select {
+            appearance: none;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23555' d='M1.293 3.293a1 1 0 0 1 1.414 0L6 6.586l3.293-3.293a1 1 0 1 1 1.414 1.414l-4 4a1 1 0 0 1-1.414 0l-4-4a1 1 0 0 1 0-1.414z'/%3E%3C/svg%3E") no-repeat right 15px center;
+        }
+        
+        .calculate-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 14px 22px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+            width: 100%;
+            font-weight: 500;
+            box-shadow: 0 2px 5px var(--shadow-medium);
+        }
+        .calculate-button:hover {
+            background-color: var(--active-color);
+            box-shadow: 0 3px 7px rgba(0,0,0,0.2);
+        }
+
+        .result-container {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            text-align: center;
+            box-shadow: 0 3px 7px var(--shadow-light);
+            animation: resultFadeIn 0.5s ease-out;
+        }
+        .result-text { font-size: 1.1em; font-weight: 500; color: #333; margin-bottom: 10px; }
+        .result-interpretation { font-size: 0.9em; color: #777; margin-bottom: 10px; }
+        .diet-suggestion { font-size: 0.9em; color: var(--dark-grey); text-align: left; margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px; }
+
+        .loading-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.8); display: none; justify-content: center; align-items: center; z-index: 10; border-radius: 30px; }
+        .loading-spinner { border: 5px solid #f3f3f3; border-top: 5px solid var(--primary-color); border-radius: 50%; width: 50px; height: 50px; animation: spin 2s linear infinite; }
+        
+        .slide-out, .user-slide-out { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #fff; transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); padding: 30px 20px 20px 20px; box-sizing: border-box; text-align: left; overflow-y: auto; will-change: transform; border-radius: 30px; z-index: 25; }
+        .slide-out { transform: translateX(-100%); }
+        .user-slide-out { transform: translateX(100%); }
+        .slide-out.active { transform: translateX(0); }
+        .user-slide-out.active { transform: translateX(0); }
+        .smartphone-container.slide-active { box-shadow: 5px 8px 25px rgba(0, 0, 0, 0.2); }
+        .smartphone-container.user-slide-active { box-shadow: -5px 8px 25px rgba(0, 0, 0, 0.2); }
+        .smartphone-container.slide-active .top-icons, .smartphone-container.user-slide-active .top-icons,
+        .smartphone-container.slide-active .bottom-icons, .smartphone-container.user-slide-active .bottom-icons { opacity: 0; pointer-events: none; transition: opacity 0.2s ease-out; }
+
+        .slide-out h2, .user-slide-out h2 { font-size: 1.4em; margin-top: 10px; margin-bottom: 15px; color: var(--primary-color); text-align: left; animation: fadeInUp 0.5s ease-out 0.1s both; }
+        .slide-out h3, .user-slide-out h3 { font-size: 1.15em; margin-top: 18px; margin-bottom: 8px; text-align: left; color: var(--primary-color-dark); animation: fadeInUp 0.5s ease-out 0.2s both; }
+        .slide-out p, .user-slide-out p { font-size: 0.9em; margin-bottom: 5px; text-align: left; color: var(--dark-grey); animation: fadeInUp 0.5s ease-out 0.3s both; line-height: 1.4; }
+        
+        .hospital-list { list-style-type: none; padding-left: 0; margin-top: 10px; animation: fadeInUp 0.5s ease-out 0.4s both; }
+        .hospital-list li { margin-bottom: 8px; text-align: left; padding-left: 25px; position: relative; font-size: 0.9em; display: flex; align-items: center; }
+        .hospital-list li::before { content: "\f479"; font-family: "Font Awesome 6 Free"; font-weight: 900; color: var(--active-color); position: absolute; left: 0; top: 50%; transform: translateY(-50%); font-size: 1.1em; }
+        .hospital-list .list-placeholder { color: var(--medium-grey); font-style: italic; }
+
+        .close-button { position: absolute; top: 15px; right: 18px; font-size: 1.7em; color: var(--medium-grey); cursor: pointer; background: none; border: none; outline: none; transition: color 0.2s, transform 0.2s; z-index: 26; padding: 5px; line-height: 1; }
+        .close-button:hover { color: var(--dark-grey); transform: rotate(90deg) scale(1.1); }
+
+        .settings-accordion { margin-top: 20px; border-top: 1px solid #eee; border-bottom: 1px solid #eee; animation: fadeInUp 0.5s ease-out 0.3s both; }
+        .settings-accordion summary { font-size: 1.15em; font-weight: 500; color: var(--primary-color-dark); padding: 12px 0; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+        .settings-accordion summary::-webkit-details-marker { display: none; }
+        .settings-accordion summary::after { content: '\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900; font-size: 0.8em; color: var(--medium-grey); transition: transform 0.2s ease-in-out; }
+        .settings-accordion[open] summary::after { transform: rotate(-180deg); }
+        
+        .language-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 5px; padding-bottom: 15px; }
+        .lang-button { background-color: var(--light-grey); border: 1px solid transparent; border-radius: 8px; padding: 6px 5px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 0.85em; font-weight: 500; cursor: pointer; text-align: center; transition: all 0.2s ease-out; color: var(--dark-grey); }
+        .lang-button:hover { background-color: #e0e0e0; transform: translateY(-1px); }
+        .lang-button.active { background-color: var(--active-color); color: white; font-weight: 600; border-color: var(--primary-color-dark); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
+        .user-profile-header { display: flex; justify-content: flex-start; align-items: center; margin-bottom: 5px; }
+        .user-profile-header h2 { margin: 10px 0 10px 0; }
+        .edit-profile-btn { background: none; border: none; color: var(--dark-grey); font-size: 0.9em; cursor: pointer; padding: 6px; border-radius: 50%; transition: background-color 0.2s ease, color 0.2s ease; line-height: 1; margin-left: 8px; }
+        .edit-profile-btn:hover { background-color: var(--light-grey); color: var(--primary-color); }
+        .user-info-display p { margin: 8px 0; font-size: 0.9em; animation: none; }
+        .user-info-display p > strong { font-weight: 600; margin-right: 5px; color: var(--dark-grey); }
+        #profile-edit-form { display: none; border-top: 1px solid #eee; padding-top: 15px; margin-top: 10px; }
+        .user-slide-out.edit-mode .user-info-display, .user-slide-out.edit-mode .user-profile-lower-content { display: none; }
+        .user-slide-out.edit-mode #profile-edit-form { display: block; animation: fadeIn 0.3s ease; }
+        
+        .logout-button { background: rgba(58, 138, 122, 0.1); border-radius: 20px; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); border: 1px solid rgba(58, 138, 122, 0.15); padding: 10px 22px; font-size: 0.95em; font-weight: 500; color: var(--primary-color-dark); cursor: pointer; transition: all 0.25s ease; margin-top: 25px; width: fit-content; margin-left: auto; margin-right: auto; display: block; }
+        .logout-button:hover { background: rgba(58, 138, 122, 0.18); border-color: rgba(58, 138, 122, 0.25); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12); }
+        
+        .reminder-section { margin-top: 20px; text-align: left; padding: 12px 15px; background-color: rgba(240, 248, 245, 0.5); border-radius: 10px; border: 1px solid rgba(58, 138, 122, 0.1); animation: fadeIn 0.6s ease-out 0.3s both; }
+        .reminder-header { display: flex; justify-content: space-between; align-items: center; }
+        .add-reminder-btn { background-color: var(--active-color); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; font-size: 1em; cursor: pointer; transition: all 0.2s ease; }
+        .add-reminder-btn:hover { transform: scale(1.1) rotate(90deg); background-color: var(--primary-color-dark); }
+        .reminder-list { list-style: none; padding: 0; margin: 10px 0 0 0; }
+        .reminder-list .list-placeholder { text-align: center; padding: 20px; color: var(--medium-grey); font-size: 0.9em; }
+        .reminder-item { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; padding: 10px; background-color: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); animation: scaleUp 0.4s ease-out forwards; position: relative; }
+        .reminder-item:last-child { margin-bottom: 0; }
+        .reminder-info { display: flex; align-items: center; }
+        .reminder-item i.fa-pills { font-size: 1.3em; color: var(--active-color); margin-right: 12px; flex-shrink: 0; }
+        .reminder-text { display: flex; flex-direction: column; }
+        .reminder-text p { animation: none; margin: 0; line-height: 1.3; }
+        .reminder-text .med-name { font-weight: 600; color: #444; font-size: 0.9em; }
+        .reminder-text .med-details { font-size: 0.8em; color: #777; }
+        .delete-reminder-btn { background: none; border: none; color: var(--medium-grey); cursor: pointer; font-size: 1.1em; padding: 5px; transition: color 0.2s ease, transform 0.2s ease; }
+        .delete-reminder-btn:hover { color: var(--danger-color); transform: scale(1.15); }
+        
+        .health-progress-section { margin-top: 20px; text-align: left; padding: 12px 15px; background-color: rgba(240, 248, 245, 0.5); border-radius: 10px; border: 1px solid rgba(58, 138, 122, 0.1); animation: fadeIn 0.6s ease-out 0.3s both; }
+        .health-progress-section h3 { margin-bottom: 10px; }
+        .progress-bar { height: 10px; background-color: #e8e8e8; border-radius: 5px; margin-top: 0; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,0.08); }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--active-color), #5fc4aa); border-radius: 5px; transition: width 1.2s cubic-bezier(0.65, 0, 0.35, 1); }
+        .day-labels { display: flex; justify-content: space-between; font-size: 0.7em; margin-top: 6px; color: #888; }
+        .day-labels span { flex: 1; text-align: center; }
+        
+        .reminder-modal-overlay { position: absolute; inset: 0; background-color: rgba(0, 0, 0, 0.5); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+        .reminder-modal-overlay.active { opacity: 1; visibility: visible; }
+        .reminder-modal-content { background-color: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); width: 90%; max-width: 280px; transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .reminder-modal-overlay.active .reminder-modal-content { transform: scale(1); }
+        .reminder-modal-content h3 { margin-top: 0; margin-bottom: 15px; color: var(--primary-color); text-align: center; font-size: 1.2em; }
+        .form-group { margin-bottom: 12px; text-align: left; }
+        .form-group label { display: block; font-size: 0.85em; color: var(--dark-grey); margin-bottom: 4px; font-weight: 500; }
+        .form-group input, .form-group select { width: 100%; padding: 9px 12px; border: 1px solid var(--medium-grey); border-radius: 8px; font-size: 0.9em; font-family: inherit; box-sizing: border-box; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(58, 138, 122, 0.15); }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .modal-buttons button { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid transparent; font-family: inherit; font-weight: 600; font-size: 0.9em; cursor: pointer; transition: all 0.2s ease; }
+        .modal-save-btn { background-color: var(--active-color); color: white; border-color: var(--primary-color-dark); }
+        .modal-cancel-btn { background-color: #f1f1f1; color: var(--dark-grey); }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes resultFadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes scaleUp { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+
+    </style>
+</head>
+
+<body>
+    <div class="clinic-page">
+        <div class="smartphone-container">
+            <div class="top-icons">
+                <i class="fas fa-bars menu-icon"></i>
+                <i class="fas fa-user-circle user-icon"></i>
+            </div>
+            
+            <div class="content-wrapper">
+                <h1 class="sugar-test-heading" data-key="sugarHeader">Sugar Test Calculator</h1>
+                <div class="input-container">
+                    <label for="sugarLevel" data-key="sugarLevelLabel">Sugar Level (mg/dL):</label>
+                    <input type="number" id="sugarLevel" name="sugarLevel" data-key="sugarLevelPlaceholder" placeholder="Enter Sugar Level">
+                </div>
+                <div class="select-container">
+                    <label for="timing" data-key="timingLabel">Timing:</label>
+                    <select id="timing" name="timing">
+                        <option value="fasting" data-key="timingOptionFasting">Fasting (Before Eating)</option>
+                        <option value="postMeal" data-key="timingOptionPostMeal">Post-Meal (1-2 Hours After Eating)</option>
+                        <option value="random" data-key="timingOptionRandom">Random</option>
+                    </select>
+                </div>
+                <button id="calculateBtn" class="calculate-button" data-key="calculateBtn">Calculate</button>
+                <div class="result-container" style="display: none;">
+                    <p class="result-text" data-key="resultTitle">Your Sugar Level:</p>
+                    <p id="sugarLevelResult" class="result-text"></p>
+                    <p id="sugarLevelInterpretation" class="result-interpretation"></p>
+                    <p id="dietSuggestion" class="diet-suggestion"></p>
+                </div>
+            </div>
+
+            <div class="loading-overlay">
+                <div class="loading-spinner"></div>
+            </div>
+
+            <div class="bottom-icons">
+                <a href="{{ url_for('clinic') }}" title="Clinic Home" data-key="navClinic"><i class="fas fa-clinic-medical active"></i></a>
+                <a href="{{ url_for('checkup') }}" title="Checkup" data-key="navCheckup"><i class="fas fa-notes-medical"></i></a>
+                <a href="{{ url_for('blood_test') }}" title="Blood Test" data-key="navBloodTest"><i class="fas fa-tint"></i></a>
+                <a href="{{ url_for('scanning') }}" title="Scanning" data-key="navScanning"><i class="fas fa-qrcode"></i></a>
+                <a href="{{ url_for('report') }}" title="Reports" data-key="navReports"><i class="fas fa-file-alt"></i></a>
+            </div>
+            
+            <div class="slide-out">
+                <button class="close-button">×</button>
+                <h2 data-key="menuHello">Hello User!</h2>
+                <p class="location-display"><i class="fas fa-map-marker-alt"></i> Location: Rourkela, Odisha</p>
+                <details class="settings-accordion">
+                    <summary data-key="settingsTitle">Settings</summary>
+                    <div class="language-selector">
+                        <button class="lang-button" data-lang="en">English</button><button class="lang-button" data-lang="hi">हिंदी</button><button class="lang-button" data-lang="bn">বাংলা</button><button class="lang-button" data-lang="te">తెలుగు</button><button class="lang-button" data-lang="mr">मराठी</button><button class="lang-button" data-lang="ta">தமிழ்</button><button class="lang-button" data-lang="ur">اردو</button><button class="lang-button" data-lang="gu">ગુજરાતી</button><button class="lang-button" data-lang="kn">ಕನ್ನಡ</button><button class="lang-button" data-lang="or">ଓଡ଼ିଆ</button><button class="lang-button" data-lang="ml">മലയാളം</button><button class="lang-button" data-lang="pa">ਪੰਜਾਬੀ</button><button class="lang-button" data-lang="as">অসমীয়া</button>
+                    </div>
+                </details>
+                <h3 data-key="menuHospitalsTitle">Nearby Hospitals</h3>
+                <ul class="hospital-list">
+                </ul>
+            </div>
+
+            <div class="user-slide-out">
+                <button class="close-button">×</button>
+                <div class="user-profile-header">
+                    <h2 data-key="profileTitle">User Profile</h2>
+                    <button class="edit-profile-btn" title="Edit Profile" data-key="editProfileTitle">
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+                </div>
+                <div class="user-info-display">
+                    <p><strong>User Id:</strong> <span>JEEV3317</span></p>
+                    <p><strong data-key="profileNameLabel">Name:</strong> <span id="display-name">Sita Kumari</span></p>
+                    <p><strong data-key="profileAgeLabel">Age:</strong> <span id="display-age">22</span> <span data-key="yrUnit">yr</span></p>
+                    <p><strong data-key="profileGenderLabel">Gender:</strong> <span id="display-gender">Female</span></p>
+                    <p><strong data-key="profileHeightLabel">Height:</strong> <span id="display-height">173</span> <span data-key="cmUnit">cm</span></p>
+                    <p><strong data-key="profileWeightLabel">Weight:</strong> <span id="display-weight">71</span> <span data-key="kgUnit">kg</span></p>
+                </div>
+                <form id="profile-edit-form">
+                    <div class="form-group">
+                        <label for="edit-name" data-key="profileNameLabel">Name</label>
+                        <input type="text" id="edit-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-age" data-key="profileAgeLabel">Age</label>
+                        <input type="number" id="edit-age" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-gender" data-key="profileGenderLabel">Gender</label>
+                        <select id="edit-gender" required>
+                            <option value="Female">Female</option>
+                            <option value="Male">Male</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-height">Height (cm)</label>
+                        <input type="number" id="edit-height" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-weight">Weight (kg)</label>
+                        <input type="number" id="edit-weight" required>
+                    </div>
+                    <div class="modal-buttons">
+                        <button type="button" id="cancel-profile-edit" class="modal-cancel-btn" data-key="cancelBtn">Cancel</button>
+                        <button type="submit" class="modal-save-btn" data-key="saveBtn">Save</button>
+                    </div>
+                </form>
+                <div class="user-profile-lower-content">
+                    <div class="reminder-section">
+                        <div class="reminder-header">
+                            <h3 data-key="profileReminders" style="margin:0;">Reminders</h3>
+                            <button class="add-reminder-btn" title="Add Reminder">+</button>
+                        </div>
+                        <ul class="reminder-list">
+                        </ul>
+                    </div>
+                    <div class="health-progress-section">
+                        <h3 data-key="profileProgress">Your Health Progress (Week)</h3>
+                        <div class="progress-bar">
+                            <div class="progress-bar-fill" style="width: 65%;"></div>
+                        </div>
+                        <div class="day-labels">
+                            <span data-key="dayMon">Mon</span><span data-key="dayTue">Tue</span><span data-key="dayWed">Wed</span><span data-key="dayThu">Thu</span><span data-key="dayFri">Fri</span><span data-key="daySat">Sat</span><span data-key="daySun">Sun</span>
+                        </div>
+                    </div>
+                    <form method="post" action="{{ url_for('logout') }}">
+                        <button type="submit" class="logout-button" data-key="logoutButton">Logout</button>
+                    </form>
+                </div>
+            </div>
+            
+             <div class="reminder-modal-overlay">
+                <div class="reminder-modal-content">
+                    <h3 data-key="addReminderTitle">Add Medicine Reminder</h3>
+                    <form id="reminder-form">
+                        <div class="form-group">
+                            <label for="med-name" data-key="medNameLabel">Medicine Name</label>
+                            <input type="text" id="med-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="med-times" data-key="medTimesLabel">Times (e.g., 08:00, 22:00)</label>
+                            <input type="text" id="med-times" placeholder="Comma separated, 24h format" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="med-meal" data-key="medMealLabel">Meal</label>
+                            <select id="med-meal" required>
+                                <option value="AF">After Food</option>
+                                <option value="BF">Before Food</option>
+                            </select>
+                        </div>
+                        <div class="modal-buttons">
+                            <button type="button" class="modal-cancel-btn" data-key="cancelBtn">Cancel</button>
+                            <button type="submit" class="modal-save-btn" data-key="saveBtn">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        const languageData = {
+            sugarHeader: { en: 'Sugar Test Calculator', hi: 'शुगर टेस्ट कैलकुलेटर', bn: 'সুগার টেস্ট ক্যালকুলেটর', te: 'చక్కెర పరీక్ష కాలిక్యులేటర్', mr: 'शुगर टेस्ट कॅल्क्युलेटर', ta: 'சர்க்கரை சோதனை கால்குலேட்டர்', ur: 'شوگر ٹیسٹ کیلکولیٹر', gu: 'શુગર ટેસ્ટ કેલ્ક્યુલેટર', kn: 'ಸಕ್ಕರೆ ಪರೀಕ್ಷೆ ಕ್ಯಾಲ್ಕುಲೇಟರ್', or: 'ଚିନି ପରୀକ୍ଷା କାଲକୁଲେଟର', ml: 'പഞ്ചസാര പരിശോധന കാൽക്കുലേറ്റർ', pa: 'ਸ਼ੂਗਰ ਟੈਸਟ ਕੈਲਕੁਲੇਟਰ', as: 'চেনি পৰীক্ষা কেলকুলেটৰ' },
+            sugarLevelLabel: { en: 'Sugar Level (mg/dL):', hi: 'शुगर लेवल (mg/dL):', bn: 'সুগার লেভেল (mg/dL):', te: 'చక్కెర స్థాయి (mg/dL):', mr: 'शुगर लेव्हल (mg/dL):', ta: 'சர்க்கரை அளவு (mg/dL):', ur: 'شوگر لیول (mg/dL):', gu: 'શુગર લેવલ (mg/dL):', kn: 'ಸಕ್ಕರೆ ಮಟ್ಟ (mg/dL):', or: 'ଚିନି ସ୍ତର (mg/dL):', ml: 'പഞ്ചസാരയുടെ അളവ് (mg/dL):', pa: 'ਸ਼ੂਗਰ ਦਾ ਪੱਧਰ (mg/dL):', as: 'চেনিৰ স্তৰ (mg/dL):' },
+            sugarLevelPlaceholder: { en: 'Enter Sugar Level', hi: 'शुगर लेवल डालें', bn: 'সুগার লেভেল লিখুন', te: 'చక్కెర స్థాయిని నమోదు చేయండి', mr: 'शुगर लेव्हल प्रविष्ट करा', ta: 'சர்க்கரை அளவை உள்ளிடவும்', ur: 'شوگر لیول درج کریں', gu: 'શુગર લેવલ દાખલ કરો', kn: 'ಸಕ್ಕರೆ ಮಟ್ಟವನ್ನು ನಮೂದಿಸಿ', or: 'ଚିନି ସ୍ତର ପ୍ରବେଶ କରନ୍ତୁ', ml: 'പഞ്ചസാരയുടെ അളവ് നൽകുക', pa: 'ਸ਼ੂਗਰ ਦਾ ਪੱਧਰ ਦਾਖਲ ਕਰੋ', as: 'চেনিৰ স্তৰ লিখক' },
+            timingLabel: { en: 'Timing:', hi: 'समय:', bn: 'সময়:', te: 'సమయం:', mr: 'वेळ:', ta: 'நேரம்:', ur: 'ٹائمنگ:', gu: 'સમય:', kn: 'ಸಮಯ:', or: 'ସମୟ:', ml: 'സമയം:', pa: 'ਸਮਾਂ:', as: 'সময়:' },
+            timingOptionFasting: { en: 'Fasting (Before Eating)', hi: 'खाली पेट (खाने से पहले)', bn: 'ফাস্টিং (খাওয়ার আগে)', te: 'ఉపవాసం (తినడానికి ముందు)', mr: 'उपवास (खाण्यापूर्वी)', ta: 'உண்ணாவிரதம் (சாப்பிடுவதற்கு முன்)', ur: 'روزہ (کھانے سے پہلے)', gu: 'ઉપવાસ (ખાતા પહેલા)', kn: 'ಉಪವಾಸ (ಊಟಕ್ಕೆ ಮೊದಲು)', or: 'ଉପବାସ (ଖାଇବା ପୂର୍ବରୁ)', ml: 'ഉപവാസം (ആഹാരത്തിന് മുൻപ്)', pa: 'ਵਰਤ (ਖਾਣ ਤੋਂ ਪਹਿਲਾਂ)', as: 'ৰোজা (খোৱাৰ আগত)' },
+            timingOptionPostMeal: { en: 'Post-Meal (1-2 Hours After Eating)', hi: 'खाने के बाद (1-2 घंटे)', bn: 'পোস্ট-মিল (খাওয়ার ১-২ ঘন্টা পরে)', te: 'భోజనం తర్వాత (1-2 గంటలు)', mr: 'जेवणानंतर (१-२ तास)', ta: 'உணவுக்குப் பின் (1-2 மணி நேரம்)', ur: 'کھانے کے بعد (1-2 گھنٹے)', gu: 'ભોજન પછી (1-2 કલાક)', kn: 'ಊಟದ ನಂತರ (1-2 ಗಂಟೆಗಳು)', or: 'ଖାଇବା ପରେ (୧-୨ ଘଣ୍ଟା)', ml: 'ഭക്ഷണശേഷം (1-2 മണിക്കൂർ)', pa: 'ਖਾਣੇ ਤੋਂ ਬਾਅਦ (1-2 ਘੰਟੇ)', as: 'খোৱাৰ পিছত (১-২ ঘণ্টা)' },
+            timingOptionRandom: { en: 'Random', hi: 'रैंडम', bn: 'র‍্যান্ডম', te: 'యాదృచ్ఛికం', mr: 'रँडम', ta: 'சீரற்ற', ur: 'بے ترتیب', gu: 'રેન્ડમ', kn: 'ಯಾದೃಚ್ಛಿಕ', or: 'ରାଣ୍ଡମ', ml: 'ക്രമരഹിതം', pa: 'ਰੈਂਡਮ', as: 'ৰেণ্ডম' },
+            calculateBtn: { en: 'Calculate', hi: 'गणना करें', bn: 'গণনা করুন', te: 'లెక్కించండి', mr: 'गणना करा', ta: 'கணக்கிடு', ur: 'حساب لگائیں', gu: 'ગણતરી કરો', kn: 'ಲೆಕ್ಕಾಚಾರ ಮಾಡಿ', or: 'ଗଣନା କରନ୍ତୁ', ml: 'കണക്കാക്കുക', pa: 'ਗਣਨਾ ਕਰੋ', as: 'গণনা কৰক' },
+            resultTitle: { en: 'Your Sugar Level:', hi: 'आपका शुगर लेवल:', bn: 'আপনার সুগার লেভেল:', te: 'మీ చక్కెర స్థాయి:', mr: 'तुमचा शुगर लेव्हल:', ta: 'உங்கள் சர்க்கரை அளவு:', ur: 'آپ کا شوگر لیول:', gu: 'તમારું શુગર લેવલ:', kn: 'ನಿಮ್ಮ ಸಕ್ಕರೆ ಮಟ್ಟ:', or: 'ଆପଣଙ୍କର ଚିନି ସ୍ତର:', ml: 'നിങ്ങളുടെ പഞ്ചസാരയുടെ അളവ്:', pa: 'ਤੁਹਾਡਾ ਸ਼ੂਗਰ ਦਾ ਪੱਧਰ:', as: 'আপোনাৰ চেনিৰ স্তৰ:' },
+            dietPrefix: { en: 'Diet Suggestion: ', hi: 'आहार सुझाव: ', bn: 'খাদ্য পরামর্শ: ', te: 'ఆహార సూచన: ', mr: 'आहार सूचना: ', ta: 'உணவு ஆலோசனை: ', ur: 'غذائی تجویز: ', gu: 'આહાર સૂચન: ', kn: 'ಆಹಾರ ಸಲಹೆ: ', or: 'ଆହାର ପରାମର୍ଶ: ', ml: 'ഭക്ഷണ നിർദ്ദേശം: ', pa: 'ਖੁਰਾਕ ਸੁਝਾਅ: ', as: 'খাদ্য পৰামৰ্শ: ' },
+            alert: { en: 'Please enter a valid sugar level.', hi: 'कृपया मान्य शुगर लेवल डालें।', bn: 'অনুগ্রহ করে বৈধ সুগার লেভেল লিখুন।', te: 'దయచేసి చెల్లుబాటు అయ్యే చక్కెర స్థాయిని నమోదు చేయండి।', mr: 'कृपया वैध शुगर लेव्हल प्रविष्ट करा।', ta: 'சரியான சர்க்கரை அளவை உள்ளிடவும்.', ur: 'براہ کرم درست شوگر لیول درج کریں۔', gu: 'કૃપા કરીને માન્ય શુગર લેવલ દાખલ કરો.', kn: 'ದಯವಿಟ್ಟು ಮಾನ್ಯವಾದ ಸಕ್ಕರೆ ಮಟ್ಟವನ್ನು ನಮೂದಿಸಿ।', or: 'ଦୟାକରି ଏକ ବୈଧ ଚିନି ସ୍ତର ପ୍ରବେଶ କରନ୍ତୁ।', ml: 'ദയവായി സാധുവായ പഞ്ചസാരയുടെ അളവ് നൽകുക।', pa: 'ਕਿਰਪਾ ਕਰਕੇ ਇੱਕ ਵੈਧ ਸ਼ੂਗਰ ਦਾ ਪੱਧਰ ਦਾਖਲ ਕਰੋ।', as: 'অনুগ্ৰহ কৰি শুদ্ধ চেনিৰ স্তৰ দিয়ক।' },
+            sugarLowHypo: { en: 'Low Blood Sugar (Hypoglycemia)', hi: 'निम्न रक्त शर्करा (हाइपोग्लाइसीमिया)', bn: 'নিম্ন রক্তে শর্করা (হাইপোগ্লাইসেমিয়া)', te: 'తక్కువ రక్త చక్కెర (హైపోగ్లైసీమియా)', mr: 'कमी रक्तातील साखर (हायपोग्लायसेमिया)', ta: 'குறைந்த இரத்த சர்க்கரை (ஹைபோగ్ไลசீமিয়া)', ur: 'کم بلڈ شوگر (ہائپوگلیسیمیا)', gu: 'લો બ્લડ શુગર (હાઈપોગ્લાયકેમિયા)', kn: 'ಕಡಿಮೆ ರಕ್ತದ ಸಕ್ಕರೆ (ಹೈಪೊಗ್ಲಿಸಿಮಿಯಾ)', or: 'ନିମ୍ନ ରକ୍ତ ଶର୍କରା (ହାଇପୋଗ୍ଲାଇସେମିଆ)', ml: 'കുറഞ്ഞ രക്തത്തിലെ പഞ്ചസാര (ഹൈപ്പോഗ്ലൈസീമിയ)', pa: 'ਘੱਟ ਬਲੱਡ ਸ਼ੂਗਰ (ਹਾਈਪੋਗਲਾਈਸੀਮੀਆ)', as: 'কম ৰক্ত শৰ্কৰা (হাইপ’গ্লাইচেমিয়া)' },
+            sugarNormalFasting: { en: 'Normal Blood Sugar Level (Fasting)', hi: 'सामान्य रक्त शर्करा स्तर (खाली पेट)', bn: 'স্বাভাবিক রক্তে শর্করার মাত্রা (ফাস্টিং)', te: 'సాధారణ రక్త చక్కెర స్థాయి (ఉపవాసం)', mr: 'सामान्य रक्तातील साखर पातळी (उपवास)', ta: 'சாதாரண இரத்த சர்க்கரை அளவு (உண்ணாவிரதம்)', ur: 'عام بلڈ شوگر لیول (روزہ)', gu: 'સામાન્ય બ્લડ શુગર લેવલ (ઉપવાસ)', kn: 'ಸಾಮಾನ್ಯ ರಕ್ತದ ಸಕ್ಕರೆ ಮಟ್ಟ (ಉಪವಾಸ)', or: 'ସାଧାରଣ ରକ୍ତ ଶର୍କରା ସ୍ତର (ଉପବାସ)', ml: 'സാധാരണ രക്തത്തിലെ പഞ്ചസാരയുടെ അളവ് (ഉപവാസം)', pa: 'ਆਮ ਬਲੱਡ ਸ਼ੂਗਰ ਦਾ ਪੱਧਰ (ਵਰਤ)', as: 'সাধাৰণ ৰক্ত শৰ্কৰা স্তৰ (ৰোজা)' },
+            sugarPreDiabetesFasting: { en: 'Pre-Diabetes (Fasting)', hi: 'प्री-डायबिटीज (खाली पेट)', bn: 'প্রি-ডায়াবেটিস (ফাস্টিং)', te: 'ప్రీ-డయాబెటిస్ (ఉపవాసం)', mr: 'प्री-डायबेटिस (उपवास)', ta: 'நீரிழிவுக்கு முந்தைய நிலை (உண்ணாவிரதம்)', ur: 'پری ذیابیطس (روزہ)', gu: 'પ્રિ-ડાયાબિટીસ (ઉપવાસ)', kn: 'ಪ್ರಿ-ಡಯಾಬಿಟಿಸ್ (ಉಪವಾಸ)', or: 'ପୂର୍ବ-ଡାଇବେଟିସ୍ (ଉపବାସ)', ml: 'പ്രീ-ഡയബറ്റിസ് (ഉപവാസം)', pa: 'ਪੂਰਵ-ਸ਼ੂਗਰ (ਵਰਤ)', as: 'প্ৰি-ডায়েবেটিচ (ৰোজা)' },
+            sugarDiabetesFasting: { en: 'Diabetes (Fasting)', hi: 'मधुमेह (खाली पेट)', bn: 'ডায়াবেটিস (ফাস্টিং)', te: 'డయాబెటిస్ (ఉపవాసం)', mr: 'मधुमेह (उपवास)', ta: 'நீரிழிவு நோய் (உண்ணாவிரதம்)', ur: 'ذیابیطس (روزہ)', gu: 'ડાયાબિટીસ (ઉપવાસ)', kn: 'ಮಧುಮೇಹ (ಉಪವಾಸ)', or: 'ମଧୁମେହ (ଉପବାସ)', ml: 'പ്രമേഹം (ഉപവാസം)', pa: 'ਸ਼ੂਗਰ (ਵਰਤ)', as: 'ডায়েবেটিচ (ৰোজা)' },
+            sugarNormalPostMeal: { en: 'Normal Blood Sugar Level (Post-Meal)', hi: 'सामान्य रक्त शर्करा स्तर (खाने के बाद)', bn: 'স্বাভাবিক রক্তে শর্করার মাত্রা (পোস্ট-মিল)', te: 'సాధారణ రక్త చక్కెర స్థాయి (భోజనం తర్వాత)', mr: 'सामान्य रक्तातील साखर पातळी (जेवणानंतर)', ta: 'சாதாரண இரத்த சர்க்கரை அளவு (உணவுக்குப் பின்)', ur: 'عام بلڈ شوگر لیول (کھانے کے بعد)', gu: 'સામાન્ય બ્લડ શુગર લેવલ (ભોજન પછી)', kn: 'ಸಾಮಾನ್ಯ ರಕ್ತದ ಸಕ್ಕರೆ ಮಟ್ಟ (ಊಟದ ನಂತರ)', or: 'ସାଧାରଣ ରକ୍ତ ଶର୍କରା ସ୍ତର (ଖାଇବା ପରେ)', ml: 'സാധാരണ രക്തത്തിലെ പഞ്ചസാരയുടെ അളവ് (ഭക്ഷണശേഷം)', pa: 'ਆਮ ਬਲੱਡ ਸ਼ੂਗਰ ਦਾ ਪੱਧਰ (ਖਾਣੇ ਤੋਂ ਬਾਅਦ)', as: 'সাধাৰণ ৰক্ত শৰ্কৰা স্তৰ (খোৱাৰ পিছত)' },
+            sugarPreDiabetesPostMeal: { en: 'Pre-Diabetes (Post-Meal)', hi: 'प्री-डायबिटीज (खाने के बाद)', bn: 'প্রি-ডায়াবেটিস (পোস্ট-মিল)', te: 'ప్రీ-డయాబెటిస్ (భోజనం తర్వాత)', mr: 'प्री-डायबेटिस (जेवणानंतर)', ta: 'நீரிழிவுக்கு முந்தைய நிலை (உணவுக்குப் பின்)', ur: 'پری ذیابیطس (کھانے کے بعد)', gu: 'પ્રિ-ડાયાબિટીસ (ભોજન પછી)', kn: 'ಪ್ರಿ-ಡಯಾಬಿಟಿಸ್ (ಊಟದ ನಂತರ)', or: 'ପୂର୍ବ-ଡାଇବେଟିସ୍ (ଖାଇବା ପରେ)', ml: 'പ്രീ-ഡയബറ്റിസ് (ഭക്ഷണശേഷം)', pa: 'ਪੂਰਵ-ਸ਼ੂਗਰ (ਖਾਣੇ ਤੋਂ ਬਾਅਦ)', as: 'প্ৰি-ডায়েবেটিচ (খোৱাৰ পিছত)' },
+            sugarDiabetesPostMeal: { en: 'Diabetes (Post-Meal)', hi: 'मधुमेह (खाने के बाद)', bn: 'ডায়াবেটিস (পোস্ট-মিল)', te: 'డయాబెటిస్ (భోజనం తర్వాత)', mr: 'मधुमेह (जेवणानंतर)', ta: 'நீரிழிவு நோய் (உணவுக்குப் பின்)', ur: 'ذیابیطس (کھانے کے بعد)', gu: 'ડાયાબિટીસ (ભોજન પછી)', kn: 'ಮಧುಮೇಹ (ಊಟದ ನಂತರ)', or: 'ମଧୁମେହ (ଖାଇବା ପରେ)', ml: 'പ്രമേഹം (ഭക്ഷണശേഷം)', pa: 'ਸ਼ੂਗਰ (ਖਾਣੇ ਤੋਂ ਬਾਅਦ)', as: 'ডায়েবেটিচ (খোৱাৰ পিছত)' },
+            sugarNormalRandom: { en: 'Normal Blood Sugar Level (Random)', hi: 'सामान्य रक्त शर्करा स्तर (रैंडम)', bn: 'স্বাভাবিক রক্তে শর্করার মাত্রা (র‍্যান্ডম)', te: 'సాధారణ రక్త చక్కెర స్థాయి (యాదృచ్ఛికం)', mr: 'सामान्य रक्तातील साखर पातळी (रँडम)', ta: 'சாதாரண இரத்த சர்க்கரை அளவு (சீரற்ற)', ur: 'عام بلڈ شوگر لیول (بے ترتیب)', gu: 'સામાન્ય બ્લડ શુગર લેવલ (રેન્ડમ)', kn: 'ಸಾಮಾನ್ಯ ರಕ್ತದ ಸಕ್ಕರೆ ಮಟ್ಟ (ಯಾದೃಚ್ಛಿಕ)', or: 'ସାଧାରଣ ରକ୍ତ ଶର୍କରା ସ୍ତର (ରାଣ୍ଡମ)', ml: 'സാധാരണ രക്തത്തിലെ പഞ്ചസാരയുടെ അളവ് (ക്രമരഹിതം)', pa: 'ਆਮ ਬਲੱਡ ਸ਼ੂਗਰ ਦਾ ਪੱਧਰ (ਰੈਂਡਮ)', as: 'সাধাৰণ ৰক্ত শৰ্কৰা স্তৰ (ৰেণ্ডম)' },
+            sugarHighRandom: { en: 'High Blood Sugar Level (Random)', hi: 'उच्च रक्त शर्करा स्तर (रैंडम)', bn: 'উচ্চ রক্তে শর্করার মাত্রা (র‍্যান্ডম)', te: 'అధిక రక్త చక్కెర స్థాయి (యాదృచ్ఛికం)', mr: 'उच्च रक्तातील साखर पातळी (रँडम)', ta: 'அதிக இரத்த சர்க்கரை அளவு (சீரற்ற)', ur: 'ہائی بلڈ شوگر لیول (بے ترتیب)', gu: 'ઉચ્ચ બ્લડ શુગર લેવલ (રેન્ડમ)', kn: 'ಹೆಚ್ಚಿನ ರಕ್ತದ ಸಕ್ಕರೆ ಮಟ್ಟ (ಯಾದೃಚ್ಛಿಕ)', or: 'ଉଚ୍ଚ ରକ୍ତ ଶର୍କରା ସ୍ତର (ରାଣ୍ଡମ)', ml: 'ഉയർന്ന രക്തത്തിലെ പഞ്ചസാരയുടെ അളവ് (ക്രമരഹിതം)', pa: 'ਹਾਈ ਬਲੱਡ ਸ਼ੂਗਰ ਦਾ ਪੱਧਰ (ਰੈਂਡਮ)', as: 'উচ্চ ৰক্ত শৰ্কৰা স্তৰ (ৰেণ্ডম)' },
+            dietLow: { en: 'Eat a quick source of sugar and consult a doctor.', hi: 'तुरंत चीनी का स्रोत खाएं और डॉक्टर से सलाह लें।', bn: 'দ্রুত চিনির উৎস খান এবং ডাক্তারের সাথে পরামর্শ করুন।', te: 'తక్షణమే చక్కెర ఉన్న पदार्थం తినండి మరియు వైద్యుడిని సంప్రదించండి।', mr: 'साखरेचा जलद स्रोत खा आणि डॉक्टरांचा सल्ला घ्या।', ta: 'சர்க்கரையின் விரைவான மூலத்தைச் சாப்பிட்டு மருத்துவரை அணுகவும்।', ur: 'چینی کا فوری ذریعہ کھائیں اور ڈاکٹر سے رجوع کریں۔', gu: 'ખાંડનો ઝડપી સ્ત્રોત ખાઓ અને ડૉક્ટરની સલાહ લો।', kn: 'ಸಕ್ಕರೆಯ ತ್ವರಿತ ಮೂಲವನ್ನು ಸೇವಿಸಿ ಮತ್ತು ವೈದ್ಯರನ್ನು ಸಂಪರ್ಕಿಸಿ।', or: 'ଶୀଘ୍ର ଚିନିର ଉତ୍ସ ଖାଆନ୍ତୁ ଏବଂ ଡାକ୍ତରଙ୍କ ସହିତ ପରାମର୍ଶ କରନ୍ତୁ।', ml: 'പഞ്ചസാരയുടെ ഒരു പെട്ടെന്നുള്ള ഉറവിടം കഴിക്കുക, ഡോക്ടറെ സമീപിക്കുക।', pa: 'ਖੰਡ ਦਾ ਇੱਕ ਤੇਜ਼ ਸਰੋਤ ਖਾਓ ਅਤੇ ਡਾਕਟਰ ਨਾਲ ਸਲਾਹ ਕਰੋ।', as: 'চেনিৰ এটা দ্ৰুত উৎস খাওক আৰু চিকিৎসকৰ পৰামৰ্শ লওক।' },
+            dietNormal: { en: 'Maintain a balanced diet.', hi: 'संतुलित आहार बनाए रखें।', bn: 'সুষম খাদ্য বজায় রাখুন।', te: 'సమతుల్య ఆహారం తీసుకోండి।', mr: 'संतुलित आहार ठेवा।', ta: 'சமச்சீர் உணவைப் பராமரிக்கவும்।', ur: 'متوازن غذا برقرار رکھیں۔', gu: 'સંતુલિત આહાર જાળવો।', kn: 'ಸಮತೋಲಿತ ಆಹಾರವನ್ನು ಕಾಪಾಡಿಕೊಳ್ಳಿ।', or: 'ସନ୍ତୁଳିତ ଆହାର ବଜାୟ ରଖନ୍ତୁ।', ml: 'സമീകൃതാഹാരം പാലിക്കുക।', pa: 'ਸੰਤੁਲਿਤ ਖੁਰਾਕ ਬਣਾਈ ਰੱਖੋ।', as: 'সন্তুলিত আহাৰ বজাই ৰাখক।' },
+            dietPreDiabetes: { en: 'Reduce sugar intake and increase exercise.', hi: 'चीनी का सेवन कम करें और व्यायाम बढ़ाएं।', bn: 'চিনি খাওয়া কমান এবং ব্যায়াম বাড়ান।', te: 'చక్కెర తీసుకోవడం తగ్గించి వ్యాయామం పెంచండి।', mr: 'साखरेचे सेवन कमी करा आणि व्यायाम वाढवा।', ta: 'சர்க்கரை உட்கொள்ளலைக் குறைத்து உடற்பயிற்சியை அதிகரிக்கவும்।', ur: 'چینی کا استعمال کم کریں اور ورزش میں اضافہ کریں۔', gu: 'ખાંડનું સેવન ઓછું કરો અને કસરત વધારો।', kn: 'ಸಕ್ಕರೆ ಸೇವನೆಯನ್ನು ಕಡಿಮೆ ಮಾಡಿ ಮತ್ತು ವ್ಯಾಯಾಮವನ್ನು ಹೆಚ್ಚಿಸಿ।', or: 'ଚିନି ସେବନ କମାନ୍ତୁ ଏବଂ ବ୍ୟାୟାମ ବଢାନ୍ତୁ।', ml: 'പഞ്ചസാരയുടെ ഉപയോഗം കുറയ്ക്കുകയും വ്യായാമം വർദ്ധിപ്പിക്കുകയും ചെയ്യുക।', pa: 'ਖੰਡ ਦੀ ਮਾਤਰਾ ਘਟਾਓ ਅਤੇ ਕਸਰਤ ਵਧਾਓ।', as: 'চেনিৰ সেৱন কম কৰক আৰু ব্যায়াম বঢ়াওক।' },
+            dietDiabetes: { en: 'Consult a doctor for treatment options.', hi: 'उपचार के विकल्पों के लिए डॉक्टर से सलाह लें।', bn: 'চিকিত্সার বিকল্পের জন্য ডাক্তারের সাথে পরামর্শ করুন।', te: 'చికిత్స ఎంపికల కోసం వైద్యుడిని సంప్రదించండి।', mr: 'उपचार पर्यायांसाठी डॉक्टरांचा सल्ला घ्या।', ta: 'சிகிச்சை விருப்பங்களுக்கு மருத்துவரை அணுகவும்।', ur: 'علاج کے اختیارات کے لیے ڈاکٹر سے رجوع کریں۔', gu: 'સારવારના વિકલ્પો માટે ડૉક્ટરની સલાહ લો।', kn: 'ಚಿಕಿತ್ಸಾ ಆಯ್ಕೆಗಳಿಗಾಗಿ ವೈದ್ಯರನ್ನು ಸಂಪರ್ಕಿಸಿ।', or: 'ଚିକିତ୍ସା ବିକଳ୍ପ ପାଇଁ ଡାକ୍ତରଙ୍କ ସହିତ ପରାମର୍ଶ କରନ୍ତୁ।', ml: 'ചികിത്സാ ഉപാധികൾക്കായി ഡോക്ടറെ സമീപിക്കുക।', pa: 'ਇਲਾਜ ਦੇ ਵਿਕਲਪਾਂ ਲਈ ਡਾਕਟਰ ਨਾਲ ਸਲਾਹ ਕਰੋ।', as: 'চিকিৎসাৰ বিকল্পৰ বাবে চিকিৎসকৰ পৰামৰ্শ লওক।' },
+            navClinic: { en: 'Clinic Home', hi: 'क्लिनिक होम', bn: 'ক্লিনিক হোম', te: 'క్లినిక్ హోమ్', mr: 'क्लिनिक होम', ta: 'கிளினிக் முகப்பு', ur: 'کلینک ہوم', gu: 'ક્લિનિક હોમ', kn: 'ಕ್ಲಿನಿಕ್ ಮುಖಪುಟ', or: 'କ୍ଲିନିକ୍ ହୋମ୍', ml: 'ക്ലിനിക്ക് ഹോം', pa: 'ਕਲੀਨਿਕ ਹੋਮ', as: 'ক্লিনিক হোম' },
+            navCheckup: { en: 'Checkup', hi: 'जाँच', bn: 'চেকআপ', te: 'చెక్అప్', mr: 'तपासणी', ta: 'பரிசோதனை', ur: 'چیک اپ', gu: 'ચેકઅપ', kn: 'ತಪಾಸಣೆ', or: 'ଚେକଅପ୍', ml: 'പരിശോധന', pa: 'ਚੈੱਕਅੱਪ', as: 'পৰীক্ষা' },
+            navBloodTest: { en: 'Blood Test', hi: 'रक्त परीक्षण', bn: 'রক্ত পরীক্ষা', te: 'రక్త పరీక్ష', mr: 'रक्त तपासणी', ta: 'இரத்த பரிசோதனை', ur: 'خون کا ٹیسٹ', gu: 'રક્ત પરીક્ષણ', kn: 'ರಕ್ತ ਪರೀಕ್ಷೆ', or: 'ରକ୍ତ ପରୀକ୍ଷା', ml: 'രക്തപരിശോധന', pa: 'ਖੂਨ ਦੀ ਜਾਂਚ', as: 'ৰক্ত পৰীক্ষা' },
+            navScanning: { en: 'Scanning', hi: 'स्कैनিং', bn: 'স্ক্যানিং', te: 'స్కానింగ్', mr: 'स्कॅनिंग', ta: 'ஸ்கேனிங்', ur: 'اسکیننگ', gu: 'સ્કેનિંગ', kn: 'ಸ್ಕ್ಯಾನಿಂಗ್', or: 'ସ୍କାନିଂ', ml: 'സ്കാനിംഗ്', pa: 'ਸਕੈਨਿੰਗ', as: 'স্কেনিং' },
+            navReports: { en: 'Reports', hi: 'रिपोर्ट्स', bn: 'রিপোর্ট', te: 'నివేదికలు', mr: 'अहवाल', ta: 'அறிக்கைகள்', ur: 'رپورٹس', gu: 'રિપોર્ટ્સ', kn: 'ವರದಿಗಳು', or: 'ରିପୋର୍ଟଗୁଡିକ', ml: 'റിപ്പോർട്ടുകൾ', pa: 'ਰਿਪੋਰਟਾਂ', as: 'ৰিপৰ্ট' },
+            menuHello: { en: 'Hello User!', hi: 'नमस्ते उपयोगकर्ता!', bn: 'নমস্কার ব্যবহারকারী!', te: 'హలో యూజర్!', mr: 'नमस्कार यूजर!', ta: 'வணக்கம் பயனரே!', ur: 'ہیلو صارف!', gu: 'નમસ્તે વપરાશકર્તા!', kn: 'ನಮಸ್ಕಾರ ಬಳಕೆದಾರ!', or: 'ନମସ୍କାର ବ୍ୟବହାରକାରୀ!', ml: 'ഹലോ യൂസർ!', pa: 'ਸਤ ਸ੍ਰੀ ਅਕਾਲ ਯੂਜ਼ਰ!', as: 'নমস্কাৰ ব্যৱহাৰকাৰী!' },
+            settingsTitle: { en: 'Settings', hi: 'सेटिंग्स', bn: 'সেটিংস', te: 'సెట్టింగ్‌లు', mr: 'सेटिंग्ज', ta: 'அமைப்புகள்', ur: 'سیٹنگز', gu: 'સેટિંગ્સ', kn: 'ಸಂಯೋਜನೆಗಳು', or: 'ସେଟିଂସମୂହ', ml: 'ക്രമീകരണങ്ങൾ', pa: 'ਸੈਟਿੰਗਾਂ', as: 'ছেটিংসমূহ' },
+            menuHospitalsTitle: { en: 'Nearby Hospitals', hi: 'आस-पास के अस्पताल', bn: 'কাছাকাছি হাসপাতাল', te: 'సమీపంలోని ఆసుపత్రులు', mr: 'जवळपासची रुग्णालये', ta: 'அருகிலுள்ள மருத்துவமனைகள்', ur: 'قریبی ہسپتال', gu: 'ਨજીકની હોસ્પિટલો', kn: 'ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಗಳು', or: 'ନିକଟବର୍ତ୍ତୀ ହସ୍ପିଟାଲଗୁଡିକ', ml: 'സമീപത്തുള്ള ആശുപത്രികൾ', pa: 'ਨੇੜਲੇ ਹਸਪਤਾਲ', as: 'ওচৰৰ চিকিৎসালয়' },
+            profileTitle: { en: 'User Profile', hi: 'उपयोगकर्ता प्रोफ़ाइल', bn: 'ব্যবহারকারী প্রোফাইল', te: 'యూజర్ ప్రొఫైల్', mr: 'वापरकर्ता प्रोफाइल', ta: 'பயனர் சுயவிவரம்', ur: 'صارف پروفائل', gu: 'વપરાશકર્તા પ્રોફાઇલ', kn: 'ಬಳಕೆದಾರರ ಪ್ರೊಫೈਲ', or: 'ବ୍ୟବହାରକାରୀ ପ୍ରୋଫାଇଲ୍', ml: 'ഉപയോക്തൃ പ്രൊഫൈൽ', pa: 'ਉਪਭੋਗਤਾ ਪ੍ਰੋਫਾਈਲ', as: 'ব্যৱহাৰকাৰীৰ প্ৰফাইল' },
+            editProfileTitle: { en: 'Edit Profile', hi: 'प्रोफ़ाइल संपादित करें', bn: 'প্রোফাইল সম্পাদনা করুন', te: 'ప్రొఫైల్ సవరించండి', mr: 'प्रोफाइल संपादित करा', ta: 'சுயவிவரத்தைத் திருத்து', ur: 'پروفائل میں ترمیم کریں', gu: 'પ્રોફાઇલ સંપાદિત કરો', kn: 'ಪ್ರೊಫೈಲ್ ಸಂಪಾದಿಸಿ', or: 'ପ୍ରୋଫାଇଲ୍ ସମ୍ପାਦନ କରନ୍ତୁ |', ml: 'പ്രൊഫൈൽ എഡിറ്റുചെയ്യുക', pa: 'ਪ੍ਰੋਫਾਈਲ ਸੰਪਾਦਿਤ ਕਰੋ', as: 'প্ৰফাইল সম্পাদনা কৰক' },
+            profileNameLabel: { en: 'Name:', hi: 'नाम:', bn: 'নাম:', te: 'పేరు:', mr: 'नाव:', ta: 'பெயர்:', ur: 'نام:', gu: 'નામ:', kn: 'ಹೆಸರು:', or: 'ନାମ:', ml: 'പേര്:', pa: 'ਨਾਮ:', as: 'নাম:' },
+            profileAgeLabel: { en: 'Age:', hi: 'आयु:', bn: 'বয়স:', te: 'వయస్సు:', mr: 'वय:', ta: 'வயது:', ur: 'عمر:', gu: 'ઉંમર:', kn: 'ವಯಸ್ಸು:', or: 'ବୟସ:', ml: 'വയസ്സ്:', pa: 'ਉਮਰ:', as: 'বয়স:' },
+            yrUnit: { en: 'yr', hi: 'वर्ष', bn: 'বছর', te: 'సం', mr: 'वर्षे', ta: 'ஆண்டு', ur: 'سال', gu: 'વર્ષ', kn: 'ವರ್ಷ', or: 'ବର୍ଷ', ml: 'വർഷം', pa: 'ਸਾਲ', as: 'বছৰ' },
+            profileGenderLabel: { en: 'Gender:', hi: 'लिंग:', bn: 'লিঙ্গ:', te: 'లింగం:', mr: 'लिंग:', ta: 'பாலினம்:', ur: 'جنس:', gu: 'જાતિ:', kn: 'ಲಿಂಗ:', or: 'ଲିଙ୍ଗ:', ml: 'ലിംഗം', pa: 'ਲਿੰਗ:', as: 'লিংগ:' },
+            profileHeightLabel: { en: 'Height:', hi: 'ऊंचाई:', bn: 'উচ্চতা:', te: 'ఎత్తు:', mr: 'उंची:', ta: 'உயரம்:', ur: 'قد:', gu: 'ઊંચાઈ:', kn: 'ಎತ್ತರ:', or: 'ଉଚ୍ଚତା:', ml: 'ഉയരം:', pa: 'ਕੱਦ:', as: 'উচ্চতা:' },
+            cmUnit: { en: 'cm', hi: 'सेमी', bn: 'সেমি', te: 'సెం.మీ.', mr: 'सेमी', ta: 'செ.மீ.', ur: 'سینٹی میٹر', gu: 'સેમી', kn: 'ಸೆಂ', or: 'ସେମି', ml: 'സെ.മീ', pa: 'ਸੈਮੀ', as: 'ছে.মি.' },
+            profileWeightLabel: { en: 'Weight:', hi: 'वजन:', bn: 'ওজন:', te: 'బరువు:', mr: 'वजन:', ta: 'எடை:', ur: 'وزن:', gu: 'વજન:', kn: 'ತೂಕ:', or: 'ଓଜନ:', ml: 'ഭാരം:', pa: 'ਭਾਰ:', as: 'ওজন:' },
+            kgUnit: { en: 'kg', hi: 'किलो', bn: 'কেজি', te: 'కిలోలు', mr: 'किलो', ta: 'கிலோ', ur: 'کلوگرام', gu: 'કિલો', kn: 'ಕೆಜಿ', or: 'କିଗ୍ରା', ml: 'കിലോ', pa: 'ਕਿਲੋ', as: 'কিলোগ্ৰাম' },
+            profileReminders: { en: 'Reminders', hi: 'रिमाइंडर', bn: 'অনুস্মারক', te: 'రిమైండర్‌లు', mr: 'स्मरणपत्रे', ta: 'நினைவூட்டல்கள்', ur: 'یاد دہানیاں', gu: 'રીમાઇન્ડર્સ', kn: 'ಜ್ಞಾಪನೆಗಳು', or: 'ସ୍ମାରକପତ୍ର', ml: 'ഓർമ്മപ്പെടുത്തലുകൾ', pa: 'ਰੀਮਾਈਂਡਰ', as: 'স্মাৰক' },
+            profileProgress: { en: 'Your Health Progress (Week)', hi: 'आपकी स्वास्थ्य प्रगति (सप्ताह)', bn: 'আপনার স্বাস্থ্য অগ্রগতি (সপ্তাহ)', te: 'మీ ఆరోగ్య పురోగతి (వారం)', mr: 'तुमची आरोग्य प्रগती (आठवडा)', ta: 'உங்கள் சுகாதார முன்னேற்றம் (வாரம்)', ur: 'آپ کی صحت کی پیشرفت (ہفتہ)', gu: 'તમારી આરોગ્ય પ્રਗતિ (અઠવાડિયું)', kn: 'ನಿಮ್ಮ ಆರೋগ্য ಪ್ರಗತಿ (ವಾರ)', or: 'ଆପଣଙ୍କ ସ୍ୱାସ୍ଥ୍ୟ ପ୍ରਗତି (ସପ୍ତାହ)', ml: 'നിങ്ങളുടെ ആരോഗ്യ പുരോഗതി (ആഴ്ച)', pa: 'ਤੁਹਾਡੀ ਸਿਹਤ ਦੀ ਪ੍ਰਗਤੀ (ਹਫ਼ਤਾ)', as: 'আপোনাৰ স্বাস্থ্যৰ প্ৰগতি (সপ্তাহ)' },
+            logoutButton: { en: 'Logout', hi: 'लॉग आउट', bn: 'লগআউট', te: 'లాగ్ అవుట్', mr: 'लॉग আউট', ta: 'வெளியேறு', ur: 'لاگ آوٹ', gu: 'ਲૉਗ ਆઉਟ', kn: 'ಲಾಗ് ಔਟ', or: 'ଲଗଆଉଟ୍', ml: 'ലോഗ്ഔട്ട്', pa: 'ਲਾਗ ਆਊਟ', as: 'লগ আউট' },
+            dayMon: { en: 'Mon', hi: 'सोम' }, dayTue: { en: 'Tue', hi: 'मंगल' }, dayWed: { en: 'Wed', hi: 'बुध' }, dayThu: { en: 'Thu', hi: 'गुरु' }, dayFri: { en: 'Fri', hi: 'शुक्र' }, daySat: { en: 'Sat', hi: 'शनि' }, daySun: { en: 'Sun', hi: 'रवि' },
+            addReminderTitle: {en: 'Add Medicine Reminder', hi: 'दवा अनुस्मारक जोड़ें', bn: 'ঔষধ রিমাইন্ডার যোগ করুন'},
+            medNameLabel: {en: 'Medicine Name', hi: 'दवा का नाम', bn: 'ঔষধের নাম'},
+            medTimesLabel: {en: 'Times (e.g., 08:00, 22:00)', hi: 'समय (उदा. 08:00, 22:00)', bn: 'সময় (উদাঃ 08:00, 22:00)'},
+            medMealLabel: {en: 'Meal', hi: 'भोजन', bn: 'খাবার'},
+            cancelBtn: {en: 'Cancel', hi: 'रद्द करें', bn: 'বাতিল'},
+            saveBtn: {en: 'Save', hi: 'सहेजें', bn: 'সংরক্ষণ'},
+        };
+        
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const smartphoneContainer = document.querySelector('.smartphone-container');
+            const menuIcon = document.querySelector('.menu-icon');
+            const userIcon = document.querySelector('.user-icon');
+            const slideOut = document.querySelector('.slide-out');
+            const userSlideOut = document.querySelector('.user-slide-out');
+            const closeButtons = document.querySelectorAll('.close-button');
+            const calculateButton = document.getElementById('calculateBtn');
+
+            const savedLang = localStorage.getItem('preferredLanguage') || 'en';
+            changeLanguage(savedLang);
+
+            const locationDisplay = document.querySelector('.location-display');
+            const hospitalList = document.querySelector('.slide-out .hospital-list');
+            let hasFetchedLocation = false;
+            
+            const reminderModal = document.querySelector('.reminder-modal-overlay');
+            const addReminderBtn = document.querySelector('.add-reminder-btn');
+            const cancelReminderBtn = document.querySelector('.modal-cancel-btn');
+            const reminderForm = document.getElementById('reminder-form');
+            const reminderList = document.querySelector('.user-slide-out .reminder-list');
+            let reminders = JSON.parse(localStorage.getItem('microClinicReminders')) || [];
+            renderReminders();
+
+            const userSlideOutPanel = document.querySelector('.user-slide-out');
+            const editProfileBtn = document.querySelector('.edit-profile-btn');
+            const profileEditForm = document.querySelector('#profile-edit-form');
+            const cancelProfileEditBtn = document.querySelector('#cancel-profile-edit');
+            const displayName = document.querySelector('#display-name');
+            const displayAge = document.querySelector('#display-age');
+            const displayGender = document.querySelector('#display-gender');
+            const displayHeight = document.querySelector('#display-height');
+            const displayWeight = document.querySelector('#display-weight');
+            const editName = document.querySelector('#edit-name');
+            const editAge = document.querySelector('#edit-age');
+            const editGender = document.querySelector('#edit-gender');
+            const editHeight = document.querySelector('#edit-height');
+            const editWeight = document.querySelector('#edit-weight');
+
+            const languageSelector = document.querySelector('.language-selector');
+
+            function changeLanguage(lang) {
+                if (!lang) return;
+                document.documentElement.lang = lang;
+                document.querySelectorAll('[data-key]').forEach(elem => {
+                    const key = elem.dataset.key;
+                    const translation = languageData[key]?.[lang];
+                    if (translation) {
+                        if (elem.tagName === 'INPUT') elem.placeholder = translation;
+                        else if(elem.title) elem.title = translation;
+                        else elem.textContent = translation;
+                    }
+                });
+                document.querySelectorAll('.lang-button').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.lang === lang);
+                });
+                localStorage.setItem('preferredLanguage', lang);
+            }
+
+            languageSelector.addEventListener('click', (event) => {
+                const button = event.target.closest('.lang-button');
+                if (button) {
+                    changeLanguage(button.dataset.lang);
+                }
+            });
+            
+            menuIcon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeAllSlides(userSlideOut);
+                slideOut.classList.add('active');
+                smartphoneContainer.classList.add('slide-active');
+                if (!hasFetchedLocation) handleGeolocation();
+            });
+            userIcon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeAllSlides(slideOut);
+                userSlideOut.classList.add('active');
+                smartphoneContainer.classList.add('user-slide-active');
+            });
+            closeButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const panelToClose = e.target.closest('.slide-out, .user-slide-out');
+                    closeSlide(panelToClose);
+                });
+            });
+            
+            function closeSlide(panelElement) {
+                if (!panelElement || !panelElement.classList.contains('active')) return;
+                panelElement.classList.remove('active');
+                if (panelElement.classList.contains('user-slide-out') && panelElement.classList.contains('edit-mode')) {
+                    exitEditMode();
+                }
+                if (panelElement.classList.contains('slide-out')) {
+                    smartphoneContainer.classList.remove('slide-active');
+                } else if (panelElement.classList.contains('user-slide-out')) {
+                    smartphoneContainer.classList.remove('user-slide-active');
+                }
+            }
+
+            function closeAllSlides(...panelsToKeepOpen) {
+                [slideOut, userSlideOut].forEach(panel => {
+                    if (!panelsToKeepOpen.includes(panel)) closeSlide(panel);
+                });
+            }
+
+            function handleGeolocation() {
+                locationDisplay.innerHTML = `<i class="fas fa-spinner fa-spin loading-spinner"></i> Finding location...`;
+                hospitalList.innerHTML = `<li class="list-placeholder"><i class="fas fa-spinner fa-spin loading-spinner"></i> Loading hospitals...</li>`;
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            fetchReverseGeocode();
+                            fetchNearbyHospitals();
+                            hasFetchedLocation = true;
+                        }, (error) => {
+                            console.error(`Geolocation error: ${error.message}`);
+                            locationDisplay.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Location access denied.`;
+                            hospitalList.innerHTML = `<li class="list-placeholder">Cannot fetch hospitals without location.</li>`;
+                        }
+                    );
+                } else {
+                     locationDisplay.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Geolocation not supported.`;
+                     hospitalList.innerHTML = ``;
+                }
+            }
+            async function fetchReverseGeocode() {
+                await new Promise(resolve => setTimeout(resolve, 800));
+                locationDisplay.innerHTML = `<i class="fas fa-map-marker-alt"></i> Location: Bhubaneswar, Odisha`;
+            }
+            async function fetchNearbyHospitals() {
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                const simulatedHospitals = [
+                    { name: 'AIIMS Hospital', distance: '1.2km' },
+                    { name: 'Apollo Hospital', distance: '2.5km' },
+                    { name: 'AMRI Hospital', distance: '3.1km' },
+                    { name: 'Kar Clinic', distance: '4.0km' },
+                    { name: 'Kalinga Hospital', distance: '4.8km' },
+                    { name: 'Sunshine Clinic', distance: '5.5km' }
+                ];
+                hospitalList.innerHTML = '';
+                simulatedHospitals.forEach(hospital => {
+                    const li = document.createElement('li');
+                    li.textContent = `${hospital.name}: ${hospital.distance}`;
+                    hospitalList.appendChild(li);
+                });
+            }
+            
+            function enterEditMode() {
+                editName.value = displayName.textContent.trim();
+                editAge.value = displayAge.textContent.trim();
+                editGender.value = displayGender.textContent.trim();
+                editHeight.value = displayHeight.textContent.trim();
+                editWeight.value = displayWeight.textContent.trim();
+                userSlideOutPanel.classList.add('edit-mode');
+            }
+            function exitEditMode() { userSlideOutPanel.classList.remove('edit-mode'); }
+
+            editProfileBtn.addEventListener('click', enterEditMode);
+            cancelProfileEditBtn.addEventListener('click', exitEditMode);
+            
+            profileEditForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                displayName.textContent = editName.value.trim();
+                displayAge.textContent = editAge.value.trim();
+                displayGender.textContent = editGender.value.trim();
+                displayHeight.textContent = editHeight.value.trim();
+                displayWeight.textContent = editWeight.value.trim();
+                exitEditMode();
+            });
+            
+            function openReminderModal() { reminderModal.classList.add('active'); }
+            function closeReminderModal() { reminderModal.classList.remove('active'); reminderForm.reset(); }
+            function saveReminders() { localStorage.setItem('microClinicReminders', JSON.stringify(reminders)); }
+            
+            function renderReminders() {
+                reminderList.innerHTML = '';
+                if (reminders.length === 0) {
+                    reminderList.innerHTML = `<p class="list-placeholder">No reminders added yet.</p>`; return;
+                }
+                reminders.forEach(reminder => {
+                    const reminderEl = document.createElement('li');
+                    reminderEl.className = 'reminder-item';
+                    reminderEl.dataset.id = reminder.id;
+                    reminderEl.innerHTML = `
+                        <div class="reminder-info">
+                             <i class="fas fa-pills"></i>
+                             <div class="reminder-text">
+                                <p class="med-name">${reminder.name}</p>
+                                <p class="med-details">${reminder.times} - ${reminder.meal}</p>
+                             </div>
+                        </div>
+                        <button class="delete-reminder-btn" title="Delete Reminder"><i class="fas fa-trash-alt"></i></button>`;
+                    reminderList.appendChild(reminderEl);
+                });
+            }
+
+            addReminderBtn.addEventListener('click', openReminderModal);
+            cancelReminderBtn.addEventListener('click', closeReminderModal);
+            reminderModal.addEventListener('click', (e) => { if (e.target === reminderModal) closeReminderModal(); });
+
+            reminderForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newReminder = { id: Date.now(), name: document.getElementById('med-name').value.trim(), times: document.getElementById('med-times').value.trim(), meal: document.getElementById('med-meal').value, };
+                reminders.push(newReminder); saveReminders(); renderReminders(); closeReminderModal();
+            });
+            
+            reminderList.addEventListener('click', (e) => {
+                const deleteBtn = e.target.closest('.delete-reminder-btn');
+                if (deleteBtn) {
+                    const reminderId = parseInt(deleteBtn.parentElement.dataset.id, 10);
+                    reminders = reminders.filter(r => r.id !== reminderId);
+                    saveReminders(); renderReminders();
+                }
+            });
+            
+            function calculateSugarLevel() {
+                const sugarLevel = document.getElementById('sugarLevel').value;
+                const timing = document.getElementById('timing').value;
+                const resultContainer = document.querySelector('.result-container');
+                const sugarLevelResult = document.getElementById('sugarLevelResult');
+                const sugarLevelInterpretation = document.getElementById('sugarLevelInterpretation');
+                const dietSuggestion = document.getElementById('dietSuggestion');
+                const loadingOverlay = document.querySelector('.loading-overlay');
+                const lang = localStorage.getItem('preferredLanguage') || 'en';
+
+                if (!sugarLevel || isNaN(sugarLevel)) {
+                    alert(languageData.alert[lang]); return;
+                }
+
+                loadingOverlay.style.display = 'flex';
+                resultContainer.style.display = 'none';
+
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                    let interpretation = ''; let diet = '';
+
+                    if (timing === 'fasting') {
+                        if (sugarLevel < 70) { interpretation = languageData.sugarLowHypo[lang]; diet = languageData.dietLow[lang]; } 
+                        else if (sugarLevel <= 100) { interpretation = languageData.sugarNormalFasting[lang]; diet = languageData.dietNormal[lang]; } 
+                        else if (sugarLevel <= 125) { interpretation = languageData.sugarPreDiabetesFasting[lang]; diet = languageData.dietPreDiabetes[lang]; } 
+                        else { interpretation = languageData.sugarDiabetesFasting[lang]; diet = languageData.dietDiabetes[lang]; }
+                    } else if (timing === 'postMeal') {
+                        if (sugarLevel < 140) { interpretation = languageData.sugarNormalPostMeal[lang]; diet = languageData.dietNormal[lang]; } 
+                        else if (sugarLevel <= 199) { interpretation = languageData.sugarPreDiabetesPostMeal[lang]; diet = languageData.dietPreDiabetes[lang]; } 
+                        else { interpretation = languageData.sugarDiabetesPostMeal[lang]; diet = languageData.dietDiabetes[lang]; }
+                    } else if (timing === 'random') {
+                        if (sugarLevel < 140) { interpretation = languageData.sugarNormalRandom[lang]; diet = languageData.dietNormal[lang]; } 
+                        else { interpretation = languageData.sugarHighRandom[lang]; diet = languageData.dietDiabetes[lang]; }
+                    }
+
+                    sugarLevelResult.textContent = `${sugarLevel} mg/dL`;
+                    sugarLevelInterpretation.textContent = interpretation;
+                    dietSuggestion.textContent = languageData.dietPrefix[lang] + diet;
+                    resultContainer.style.display = 'block';
+                }, 2000);
+            }
+
+            calculateButton.addEventListener('click', calculateSugarLevel);
+        });
+    </script>
+</body>
+</html>

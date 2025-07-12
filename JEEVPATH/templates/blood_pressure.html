@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blood Pressure Calculator</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+        integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
+        crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <style>
+        :root {
+            --primary-color: #3a8a7a;
+            --primary-color-dark: #26826b;
+            --light-grey: #f0f0f0;
+            --medium-grey: #ccc;
+            --dark-grey: #555;
+            --active-color: #30a88a;
+            --shadow-light: rgba(0, 0, 0, 0.1);
+            --shadow-medium: rgba(0, 0, 0, 0.15);
+            --danger-color: #e53935;
+            --danger-color-light: #fbe9e7;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Bricolage Grotesque', sans-serif;
+            overflow: hidden;
+            background-color: #f0f0f0;
+        }
+
+        .clinic-page {
+            background-image: url('https://i.supaimg.com/70ab70c4-ba48-4034-bd2a-555a5e548ae4.png');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .smartphone-container {
+            width: 320px;
+            height: 568px;
+            padding: 30px;
+            border: 0.5px solid rgba(0, 0, 0, 0.2);
+            border-radius: 30px;
+            background-color: white;
+            text-align: center;
+            box-shadow: 0px 5px 20px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            position: relative;
+            overflow: hidden;
+            transition: box-shadow 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .top-icons {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            padding: 7px;
+            box-sizing: border-box;
+            position: relative;
+            z-index: 20;
+            flex-shrink: 0;
+            opacity: 1;
+            pointer-events: auto;
+            transition: opacity 0.3s ease-out;
+        }
+        
+        .top-icons i {
+            color: lightgrey;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: color 0.2s ease, transform 0.2s ease;
+        }
+
+        .top-icons i:hover {
+            color: var(--active-color);
+            transform: scale(1.1);
+        }
+
+        .loading-spinner {
+            font-size: 0.8em;
+            margin-right: 8px;
+        }
+
+        .content-wrapper {
+            flex-grow: 1; 
+            overflow-y: auto;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .content-wrapper::-webkit-scrollbar {
+            display: none;
+        }
+
+        .bottom-icons {
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            padding: 12px 0;
+            box-sizing: border-box;
+            background-color: white;
+            border-top: 1px solid #eee;
+            border-bottom-left-radius: 30px;
+            border-bottom-right-radius: 30px;
+            margin-top: auto;
+            flex-shrink: 0;
+            opacity: 1;
+            pointer-events: auto;
+            transition: opacity 0.3s ease-out;
+        }
+
+        .bottom-icons a {
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .bottom-icons i {
+            color: lightgrey;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: color 0.15s ease-in-out, transform 0.15s ease-in-out;
+        }
+        .bottom-icons i:hover {
+            color: var(--primary-color);
+            transform: translateY(-3px);
+        }
+        .bottom-icons i.active {
+            color: var(--active-color);
+        }
+        
+        .blood-pressure-heading {
+            font-size: 1.6em;
+            font-weight: 600;
+            color: var(--primary-color);
+            text-align: center;
+            width: 100%;
+            margin-top: 15px;
+            margin-bottom: 20px;
+            animation: fadeInUp 0.5s ease-out;
+            flex-shrink: 0;
+        }
+
+        .input-container {
+            width: 100%;
+            margin-bottom: 15px;
+            text-align: left;
+            animation: fadeInUp 0.5s ease-out;
+            animation-delay: 0.1s;
+            flex-shrink: 0;
+        }
+
+        .input-container label {
+            display: block;
+            font-size: 0.9em;
+            margin-bottom: 5px;
+            color: var(--dark-grey);
+            padding-left: 10px;
+        }
+
+        .input-container input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ccc;
+            border-radius: 25px; 
+            box-sizing: border-box;
+            font-size: 1em;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.05);
+        }
+
+        .calculate-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 14px 22px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1.1em;
+            font-weight: 500;
+            transition: background-color 0.3s ease, box-shadow 0.3s ease;
+            width: 100%;
+            box-shadow: 0 2px 5px var(--shadow-medium);
+            animation: fadeInUp 0.5s ease-out;
+            animation-delay: 0.2s;
+            flex-shrink: 0;
+        }
+
+        .calculate-button:hover {
+            background-color: var(--active-color);
+            box-shadow: 0 3px 7px rgba(0,0,0,0.2);
+        }
+
+        .result-container {
+            margin-top: 20px;
+            margin-bottom: 10px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            text-align: center;
+            transition: all 0.3s ease;
+            width: 100%;
+            box-sizing: border-box;
+            box-shadow: 0 3px 7px var(--shadow-light);
+            animation: resultFadeIn 0.5s ease-out;
+            flex-shrink: 0;
+        }
+        
+        .result-text { font-size: 1.1em; font-weight: 500; color: #333; margin-bottom: 10px; }
+        .result-interpretation { font-size: 0.9em; color: #777; margin-bottom: 10px; }
+        .diet-suggestion { font-size: 0.9em; color: var(--dark-grey); text-align: left; margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px; }
+        
+        .loading-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.8); display: flex; justify-content: center; align-items: center; z-index: 10; border-radius: 30px; display: none; }
+        .loading-spinner { border: 5px solid #f3f3f3; border-top: 5px solid var(--primary-color); border-radius: 50%; width: 50px; height: 50px; animation: spin 2s linear infinite; }
+        
+        .slide-out, .user-slide-out { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-color: #fff; transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94); padding: 30px 20px 20px 20px; box-sizing: border-box; text-align: left; overflow-y: auto; will-change: transform; border-radius: 30px; z-index: 25; }
+        .slide-out { transform: translateX(-100%); }
+        .user-slide-out { transform: translateX(100%); }
+        .slide-out.active { transform: translateX(0); }
+        .user-slide-out.active { transform: translateX(0); }
+        .smartphone-container.slide-active { box-shadow: 5px 8px 25px rgba(0, 0, 0, 0.2); }
+        .smartphone-container.user-slide-active { box-shadow: -5px 8px 25px rgba(0, 0, 0, 0.2); }
+        .smartphone-container.slide-active .top-icons, .smartphone-container.user-slide-active .top-icons,
+        .smartphone-container.slide-active .bottom-icons, .smartphone-container.user-slide-active .bottom-icons { opacity: 0; pointer-events: none; transition: opacity 0.2s ease-out; }
+
+        .slide-out h2, .user-slide-out h2 { font-size: 1.4em; margin-top: 10px; margin-bottom: 15px; color: var(--primary-color); text-align: left; animation: fadeInUp 0.5s ease-out 0.1s both; }
+        .slide-out h3, .user-slide-out h3 { font-size: 1.15em; margin-top: 18px; margin-bottom: 8px; text-align: left; color: var(--primary-color-dark); animation: fadeInUp 0.5s ease-out 0.2s both; }
+        .slide-out p, .user-slide-out p { font-size: 0.9em; margin-bottom: 5px; text-align: left; color: var(--dark-grey); animation: fadeInUp 0.5s ease-out 0.3s both; line-height: 1.4; }
+        
+        .hospital-list { list-style-type: none; padding-left: 0; margin-top: 10px; animation: fadeInUp 0.5s ease-out 0.4s both; }
+        .hospital-list li { margin-bottom: 8px; text-align: left; padding-left: 25px; position: relative; font-size: 0.9em; display: flex; align-items: center; }
+        .hospital-list li::before { content: "\f479"; font-family: "Font Awesome 6 Free"; font-weight: 900; color: var(--active-color); position: absolute; left: 0; top: 50%; transform: translateY(-50%); font-size: 1.1em; }
+        .hospital-list .list-placeholder { color: var(--medium-grey); font-style: italic; }
+
+        .close-button { position: absolute; top: 15px; right: 18px; font-size: 1.7em; color: var(--medium-grey); cursor: pointer; background: none; border: none; outline: none; transition: color 0.2s, transform 0.2s; z-index: 26; padding: 5px; line-height: 1; }
+        .close-button:hover { color: var(--dark-grey); transform: rotate(90deg) scale(1.1); }
+
+        .settings-accordion { margin-top: 20px; border-top: 1px solid #eee; border-bottom: 1px solid #eee; animation: fadeInUp 0.5s ease-out 0.3s both; }
+        .settings-accordion summary { font-size: 1.15em; font-weight: 500; color: var(--primary-color-dark); padding: 12px 0; cursor: pointer; list-style: none; display: flex; justify-content: space-between; align-items: center; }
+        .settings-accordion summary::-webkit-details-marker { display: none; }
+        .settings-accordion summary::after { content: '\f078'; font-family: 'Font Awesome 6 Free'; font-weight: 900; font-size: 0.8em; color: var(--medium-grey); transition: transform 0.2s ease-in-out; }
+        .settings-accordion[open] summary::after { transform: rotate(-180deg); }
+        
+        .language-selector { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 5px; padding-bottom: 15px; }
+        .lang-button { background-color: var(--light-grey); border: 1px solid transparent; border-radius: 8px; padding: 6px 5px; font-family: 'Bricolage Grotesque', sans-serif; font-size: 0.85em; font-weight: 500; cursor: pointer; text-align: center; transition: all 0.2s ease-out; color: var(--dark-grey); }
+        .lang-button:hover { background-color: #e0e0e0; transform: translateY(-1px); }
+        .lang-button.active { background-color: var(--active-color); color: white; font-weight: 600; border-color: var(--primary-color-dark); box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        
+        .user-profile-header { display: flex; justify-content: flex-start; align-items: center; margin-bottom: 5px; }
+        .user-profile-header h2 { margin: 10px 0 10px 0; }
+        .edit-profile-btn { background: none; border: none; color: var(--dark-grey); font-size: 0.9em; cursor: pointer; padding: 6px; border-radius: 50%; transition: background-color 0.2s ease, color 0.2s ease; line-height: 1; margin-left: 8px; }
+        .edit-profile-btn:hover { background-color: var(--light-grey); color: var(--primary-color); }
+        .user-info-display p { margin: 8px 0; font-size: 0.9em; animation: none; }
+        .user-info-display p > strong { font-weight: 600; margin-right: 5px; color: var(--dark-grey); }
+        #profile-edit-form { display: none; border-top: 1px solid #eee; padding-top: 15px; margin-top: 10px; }
+        .user-slide-out.edit-mode .user-info-display, .user-slide-out.edit-mode .user-profile-lower-content { display: none; }
+        .user-slide-out.edit-mode #profile-edit-form { display: block; animation: fadeIn 0.3s ease; }
+        
+        .logout-button { background: rgba(58, 138, 122, 0.1); border-radius: 20px; box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); border: 1px solid rgba(58, 138, 122, 0.15); padding: 10px 22px; font-size: 0.95em; font-weight: 500; color: var(--primary-color-dark); cursor: pointer; transition: all 0.25s ease; margin-top: 25px; width: fit-content; margin-left: auto; margin-right: auto; display: block; }
+        .logout-button:hover { background: rgba(58, 138, 122, 0.18); border-color: rgba(58, 138, 122, 0.25); transform: translateY(-2px); box-shadow: 0 5px 15px rgba(0, 0, 0, 0.12); }
+        .logout-button:active { transform: translateY(0px) scale(0.98); box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); }
+        
+        .reminder-section { margin-top: 20px; text-align: left; padding: 12px 15px; background-color: rgba(240, 248, 245, 0.5); border-radius: 10px; border: 1px solid rgba(58, 138, 122, 0.1); animation: fadeIn 0.6s ease-out 0.3s both; }
+        .reminder-header { display: flex; justify-content: space-between; align-items: center; }
+        .add-reminder-btn { background-color: var(--active-color); color: white; border: none; border-radius: 50%; width: 28px; height: 28px; font-size: 1em; cursor: pointer; transition: all 0.2s ease; }
+        .add-reminder-btn:hover { transform: scale(1.1) rotate(90deg); background-color: var(--primary-color-dark); }
+        .reminder-list { list-style: none; padding: 0; margin: 10px 0 0 0; }
+        .reminder-list .list-placeholder { text-align: center; padding: 20px; color: var(--medium-grey); font-size: 0.9em; }
+        .reminder-item { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; padding: 10px; background-color: #fff; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.07); animation: scaleUp 0.4s ease-out forwards; position: relative; }
+        .reminder-item:last-child { margin-bottom: 0; }
+        .reminder-info { display: flex; align-items: center; }
+        .reminder-item i.fa-pills { font-size: 1.3em; color: var(--active-color); margin-right: 12px; flex-shrink: 0; }
+        .reminder-text { display: flex; flex-direction: column; }
+        .reminder-text p { animation: none; margin: 0; line-height: 1.3; }
+        .reminder-text .med-name { font-weight: 600; color: #444; font-size: 0.9em; }
+        .reminder-text .med-details { font-size: 0.8em; color: #777; }
+        .delete-reminder-btn { background: none; border: none; color: var(--medium-grey); cursor: pointer; font-size: 1.1em; padding: 5px; transition: color 0.2s ease, transform 0.2s ease; }
+        .delete-reminder-btn:hover { color: var(--danger-color); transform: scale(1.15); }
+        
+        .health-progress-section { margin-top: 20px; text-align: left; padding: 12px 15px; background-color: rgba(240, 248, 245, 0.5); border-radius: 10px; border: 1px solid rgba(58, 138, 122, 0.1); animation: fadeIn 0.6s ease-out 0.3s both; }
+        .health-progress-section h3 { margin-bottom: 10px; }
+        .progress-bar { height: 10px; background-color: #e8e8e8; border-radius: 5px; margin-top: 0; overflow: hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,0.08); }
+        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--active-color), #5fc4aa); border-radius: 5px; transition: width 1.2s cubic-bezier(0.65, 0, 0.35, 1); }
+        .day-labels { display: flex; justify-content: space-between; font-size: 0.7em; margin-top: 6px; color: #888; }
+        .day-labels span { flex: 1; text-align: center; }
+        
+        .reminder-modal-overlay { position: absolute; inset: 0; background-color: rgba(0, 0, 0, 0.5); -webkit-backdrop-filter: blur(4px); backdrop-filter: blur(4px); display: flex; justify-content: center; align-items: center; z-index: 1000; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+        .reminder-modal-overlay.active { opacity: 1; visibility: visible; }
+        .reminder-modal-content { background-color: white; padding: 20px; border-radius: 15px; box-shadow: 0 5px 20px rgba(0,0,0,0.2); width: 90%; max-width: 280px; transform: scale(0.9); transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        .reminder-modal-overlay.active .reminder-modal-content { transform: scale(1); }
+        .reminder-modal-content h3 { margin-top: 0; margin-bottom: 15px; color: var(--primary-color); text-align: center; font-size: 1.2em; }
+        .form-group { margin-bottom: 12px; text-align: left; }
+        .form-group label { display: block; font-size: 0.85em; color: var(--dark-grey); margin-bottom: 4px; font-weight: 500; }
+        .form-group input, .form-group select { width: 100%; padding: 9px 12px; border: 1px solid var(--medium-grey); border-radius: 8px; font-size: 0.9em; font-family: inherit; box-sizing: border-box; transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+        .form-group input:focus, .form-group select:focus { outline: none; border-color: var(--primary-color); box-shadow: 0 0 0 3px rgba(58, 138, 122, 0.15); }
+        .modal-buttons { display: flex; gap: 10px; margin-top: 20px; }
+        .modal-buttons button { flex: 1; padding: 10px; border-radius: 8px; border: 1px solid transparent; font-family: inherit; font-weight: 600; font-size: 0.9em; cursor: pointer; transition: all 0.2s ease; }
+        .modal-save-btn { background-color: var(--active-color); color: white; border-color: var(--primary-color-dark); }
+        .modal-save-btn:hover { background-color: var(--primary-color-dark); }
+        .modal-cancel-btn { background-color: #f1f1f1; color: var(--dark-grey); }
+        .modal-cancel-btn:hover { background-color: #e0e0e0; }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideInLeft { from { transform: translateX(-20px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+        @keyframes resultFadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scaleUp { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+
+    </style>
+</head>
+
+<body>
+    <div class="clinic-page">
+        <div class="smartphone-container">
+
+            <div class="top-icons">
+                <i class="fas fa-bars menu-icon"></i>
+                <i class="fas fa-user-circle user-icon"></i>
+            </div>
+            
+            <div class="content-wrapper">
+                <h1 class="blood-pressure-heading" data-key="bpHeader">Blood Pressure Calculator</h1>
+                <div class="input-container">
+                    <label for="systolic" data-key="bpSystolicLabel">Systolic (Upper) mmHg:</label>
+                    <input type="number" id="systolic" name="systolic" data-key="bpSystolicPlaceholder" placeholder="Enter Systolic Pressure">
+                </div>
+                <div class="input-container">
+                    <label for="diastolic" data-key="bpDiastolicLabel">Diastolic (Lower) mmHg:</label>
+                    <input type="number" id="diastolic" name="diastolic" data-key="bpDiastolicPlaceholder" placeholder="Enter Diastolic Pressure">
+                </div>
+                <button class="calculate-button" id="calculateBtn" data-key="bpCalculateBtn">Calculate</button>
+                <div class="result-container" style="display: none;">
+                    <p class="result-text" data-key="bpResultTitle">Your Blood Pressure:</p>
+                    <p id="bloodPressureResult" class="result-text"></p>
+                    <p id="bloodPressureInterpretation" class="result-interpretation"></p>
+                    <p id="dietSuggestion" class="diet-suggestion"></p>
+                </div>
+            </div>
+
+            <div class="loading-overlay">
+                <div class="loading-spinner"></div>
+            </div>
+
+            <div class="slide-out">
+                <button class="close-button">×</button>
+                <h2 data-key="menuHello">Hello User!</h2>
+                <p class="location-display"><i class="fas fa-map-marker-alt"></i> Location: Rourkela, Odisha</p>
+                <details class="settings-accordion">
+                    <summary data-key="settingsTitle">Settings</summary>
+                    <div class="language-selector">
+                        <button class="lang-button" data-lang="en">English</button><button class="lang-button" data-lang="hi">हिंदी</button><button class="lang-button" data-lang="bn">বাংলা</button><button class="lang-button" data-lang="te">తెలుగు</button><button class="lang-button" data-lang="mr">मराठी</button><button class="lang-button" data-lang="ta">தமிழ்</button><button class="lang-button" data-lang="ur">اردو</button><button class="lang-button" data-lang="gu">ગુજરાતી</button><button class="lang-button" data-lang="kn">ಕನ್ನಡ</button><button class="lang-button" data-lang="or">ଓଡ଼ିଆ</button><button class="lang-button" data-lang="ml">മലയാളം</button><button class="lang-button" data-lang="pa">ਪੰਜਾਬੀ</button><button class="lang-button" data-lang="as">অসমীয়া</button>
+                    </div>
+                </details>
+                <h3 data-key="menuHospitalsTitle">Nearby Hospitals</h3>
+                <ul class="hospital-list">
+                </ul>
+            </div>
+
+            <div class="user-slide-out">
+                <button class="close-button">×</button>
+                <div class="user-profile-header">
+                    <h2 data-key="profileTitle">User Profile</h2>
+                    <button class="edit-profile-btn" title="Edit Profile" data-key="editProfileTitle">
+                        <i class="fas fa-pencil-alt"></i>
+                    </button>
+                </div>
+                <div class="user-info-display">
+                    <p><strong>User Id:</strong> <span>JEEV3317</span></p>
+                    <p><strong data-key="profileNameLabel">Name:</strong> <span id="display-name">Sita Kumari</span></p>
+                    <p><strong data-key="profileAgeLabel">Age:</strong> <span id="display-age">22</span> <span data-key="yrUnit">yr</span></p>
+                    <p><strong data-key="profileGenderLabel">Gender:</strong> <span id="display-gender">Female</span></p>
+                    <p><strong data-key="profileHeightLabel">Height:</strong> <span id="display-height">173</span> <span data-key="cmUnit">cm</span></p>
+                    <p><strong data-key="profileWeightLabel">Weight:</strong> <span id="display-weight">71</span> <span data-key="kgUnit">kg</span></p>
+                </div>
+                <form id="profile-edit-form">
+                    <div class="form-group">
+                        <label for="edit-name" data-key="profileNameLabel">Name</label>
+                        <input type="text" id="edit-name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-age" data-key="profileAgeLabel">Age</label>
+                        <input type="number" id="edit-age" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-gender" data-key="profileGenderLabel">Gender</label>
+                        <select id="edit-gender" required>
+                            <option value="Female">Female</option>
+                            <option value="Male">Male</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-height">Height (cm)</label>
+                        <input type="number" id="edit-height" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit-weight">Weight (kg)</label>
+                        <input type="number" id="edit-weight" required>
+                    </div>
+                    <div class="modal-buttons">
+                        <button type="button" id="cancel-profile-edit" class="modal-cancel-btn" data-key="cancelBtn">Cancel</button>
+                        <button type="submit" class="modal-save-btn" data-key="saveBtn">Save</button>
+                    </div>
+                </form>
+                <div class="user-profile-lower-content">
+                    <div class="reminder-section">
+                        <div class="reminder-header">
+                            <h3 data-key="profileReminders" style="margin:0;">Reminders</h3>
+                            <button class="add-reminder-btn" title="Add Reminder">+</button>
+                        </div>
+                        <ul class="reminder-list">
+                        </ul>
+                    </div>
+                    <div class="health-progress-section">
+                        <h3 data-key="profileProgress">Your Health Progress (Week)</h3>
+                        <div class="progress-bar">
+                            <div class="progress-bar-fill" style="width: 65%;"></div>
+                        </div>
+                        <div class="day-labels">
+                            <span data-key="dayMon">Mon</span><span data-key="dayTue">Tue</span><span data-key="dayWed">Wed</span><span data-key="dayThu">Thu</span><span data-key="dayFri">Fri</span><span data-key="daySat">Sat</span><span data-key="daySun">Sun</span>
+                        </div>
+                    </div>
+                    <form method="post" action="{{ url_for('logout') }}">
+                        <button type="submit" class="logout-button" data-key="logoutButton">Logout</button>
+                    </form>
+                </div>
+            </div>
+            
+             <div class="reminder-modal-overlay">
+                <div class="reminder-modal-content">
+                    <h3 data-key="addReminderTitle">Add Medicine Reminder</h3>
+                    <form id="reminder-form">
+                        <div class="form-group">
+                            <label for="med-name" data-key="medNameLabel">Medicine Name</label>
+                            <input type="text" id="med-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="med-times" data-key="medTimesLabel">Times (e.g., 08:00, 22:00)</label>
+                            <input type="text" id="med-times" placeholder="Comma separated, 24h format" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="med-meal" data-key="medMealLabel">Meal</label>
+                            <select id="med-meal" required>
+                                <option value="AF">After Food</option>
+                                <option value="BF">Before Food</option>
+                            </select>
+                        </div>
+                        <div class="modal-buttons">
+                            <button type="button" class="modal-cancel-btn" data-key="cancelBtn">Cancel</button>
+                            <button type="submit" class="modal-save-btn" data-key="saveBtn">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="bottom-icons">
+                <a href="{{ url_for('clinic') }}" title="Clinic Home" data-key="navClinic"><i class="fas fa-clinic-medical active"></i></a>
+                <a href="{{ url_for('checkup') }}" title="Checkup" data-key="navCheckup"><i class="fas fa-notes-medical"></i></a>
+                <a href="{{ url_for('blood_test') }}" title="Blood Test" data-key="navBloodTest"><i class="fas fa-tint"></i></a>
+                <a href="{{ url_for('scanning') }}" title="Scanning" data-key="navScanning"><i class="fas fa-qrcode"></i></a>
+                <a href="{{ url_for('report') }}" title="Reports" data-key="navReports"><i class="fas fa-file-alt"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const languageData = {
+            bpHeader: { en: 'Blood Pressure Calculator', hi: 'रक्तचाप कैलकुलेटर', bn: 'রক্তচাপ ক্যালকুলেটর', te: 'రక్తపోటు కాలిక్యులేటర్', mr: 'रक्तदाब कॅल्क्युलेटर', ta: 'இரத்த அழுத்த கால்குலேட்டர்', ur: 'بلڈ پریشر کیلکولیٹر', gu: 'બ્લડ પ્રેશર કેલ્ક્યુલેટર', kn: 'ರಕ್ತದೊತ್ತಡ ಕ್ಯಾಲ್ಕುಲೇಟರ್', or: 'ରକ୍ତଚାପ କାଲକୁଲେଟର', ml: 'രക്തസമ്മർദ്ദ കാൽക്കുലേറ്റർ', pa: 'ਬਲੱਡ ਪ੍ਰੈਸ਼ਰ ਕੈਲਕੁਲੇਟਰ', as: 'ৰক্তচাপ কেলকুলেটৰ' },
+            bpSystolicLabel: { en: 'Systolic (Upper) mmHg:', hi: 'सिस्टोलिक (ऊपरी) mmHg:', bn: 'সিস্টোলিক (উপরের) mmHg:', te: 'సిస్టోలిక్ (పై) mmHg:', mr: 'सिस्टोलिक (वरचे) mmHg:', ta: 'சிஸ்டாலிக் (மேல்) mmHg:', ur: 'سیسٹولک (اوپری) mmHg:', gu: 'સિસ્ટોલિક (ઉપલા) mmHg:', kn: 'ಸಿಸ್ಟೋಲಿಕ್ (ಮೇಲಿನ) mmHg:', or: 'ସିଷ୍ଟୋଲିକ୍ (ଉପର) mmHg:', ml: 'സിസ്റ്റോളിക് (മുകളിലത്തെ) mmHg:', pa: 'ਸਿਸਟੋਲਿਕ (ਉੱਪਰਲਾ) mmHg:', as: 'চিষ্ট’লিক (ওপৰৰ) mmHg:' },
+            bpDiastolicLabel: { en: 'Diastolic (Lower) mmHg:', hi: 'डायस्टोलिक (निचला) mmHg:', bn: 'ডায়াস্টোলিক (নীচের) mmHg:', te: 'డయాస్టోలిక్ (కింది) mmHg:', mr: 'डायस्टोलिक (खालचे) mmHg:', ta: 'டயஸ்டாலிக் (கீழ்) mmHg:', ur: 'ڈائیسٹولک (نیچے کا) mmHg:', gu: 'ડાયસ્ટોલિક (નીચલા) mmHg:', kn: 'ಡಯಾಸ್ಟೋಲಿಕ್ (ಕೆಳಗಿನ) mmHg:', or: 'ଡାଇଷ୍ଟୋଲିକ୍ (ତଳ) mmHg:', ml: 'ഡയസ്റ്റോളിക് (താഴത്തെ) mmHg:', pa: 'ਡਾਇਸਟੋਲਿਕ (ਹੇਠਲਾ) mmHg:', as: 'ডায়াষ্ট’লিক (তলৰ) mmHg:' },
+            bpSystolicPlaceholder: { en: 'Enter Systolic Pressure', hi: 'सिस्टोलिक दबाव दर्ज करें', bn: 'সিস্টোলিক চাপ লিখুন', te: 'సిస్టోలిక్ పీడనాన్ని నమోదు చేయండి', mr: 'सिस्टोलिक दाब प्रविष्ट करा', ta: 'சிஸ்டாலிக் அழுத்தத்தை உள்ளிடவும்', ur: 'سیسٹولک پریشر درج کریں', gu: 'સિસ્ટોલિક દબાણ દાખલ કરો', kn: 'ಸಿಸ್ಟೋಲಿಕ್ ಒತ್ತಡವನ್ನು ನಮೂದಿಸಿ', or: 'ସିଷ୍ଟୋଲିକ୍ ଚାପ ପ୍ରବେଶ କରନ୍ତୁ |', ml: 'സിസ്റ്റോളിക് മർദ്ദം നൽകുക', pa: 'ਸਿਸਟੋਲਿਕ ਦਬਾਅ ਦਰਜ ਕਰੋ', as: 'চিষ্ট’লিক চাপ প্রবেশ কৰাওক' },
+            bpDiastolicPlaceholder: { en: 'Enter Diastolic Pressure', hi: 'डायस्टोलिक दबाव दर्ज करें', bn: 'ডায়াস্টোলিক চাপ লিখুন', te: 'డయాస్టోలిక్ పీడనాన్ని నమోదు చేయండి', mr: 'डायस्टोलिक दाब प्रविष्ट करा', ta: 'டயஸ்டாலிக் அழுத்தத்தை உள்ளிடவும்', ur: 'ڈائیسٹولک پریشر درج کریں', gu: 'ડાયસ્ટોલિક દબાણ દાખલ કરો', kn: 'ಡಯಾಸ್ಟೋಲಿಕ್ ಒತ್ತಡವನ್ನು ನಮೂದಿಸಿ', or: 'ଡାଇଷ୍ଟୋଲିକ୍ ଚାପ ପ୍ରବେଶ କରନ୍ତୁ |', ml: 'ഡയസ്റ്റോളിക് മർദ്ദം നൽകുക', pa: 'ਡਾਇਸਟੋਲਿਕ ਦਬਾਅ ਦਰਜ ਕਰੋ', as: 'ডায়াষ্ট’লিক চাপ প্রবেশ কৰাওক' },
+            bpCalculateBtn: { en: 'Calculate', hi: 'गणना करें', bn: 'গণনা করুন', te: 'లెక్కించండి', mr: 'गणना करा', ta: 'கணக்கிடு', ur: 'حساب لگائیں', gu: 'ગણતરી કરો', kn: 'ಲೆಕ್ಕಾಚಾರ ಮಾಡಿ', or: 'ଗଣନା କରନ୍ତୁ', ml: 'കണക്കാക്കുക', pa: 'ਗਣਨਾ ਕਰੋ', as: 'গণনা কৰক' },
+            bpResultTitle: { en: 'Your Blood Pressure:', hi: 'आपका रक्तचाप:', bn: 'আপনার রক্তচাপ:', te: 'మీ రక్తపోటు:', mr: 'तुमचा रक्तदाब:', ta: 'உங்கள் இரத்த அழுத்தம்:', ur: 'آپ کا بلڈ پریشر:', gu: 'તમારું બ્લડ પ્રેશર:', kn: 'ನಿಮ್ಮ ರಕ್ತದೊತ್ತಡ:', or: 'ଆପଣଙ୍କର ରକ୍ତଚାପ:', ml: 'നിങ്ങളുടെ രക്തസമ്മർദ്ദം:', pa: 'ਤੁਹਾਡਾ ਬਲੱਡ ਪ੍ਰੈਸ਼ਰ:', as: 'আপোনাৰ ৰক্তচাপ:' },
+            bpDietSuggestionPrefix: { en: 'Diet Suggestion: ', hi: 'आहार सुझाव: ', bn: 'খাদ্য পরামর্শ: ', te: 'ఆహార సూచన: ', mr: 'आहार सूचना: ', ta: 'உணவு ஆலோசனை: ', ur: 'غذائی تجویز: ', gu: 'આહાર સૂચન: ', kn: 'ಆಹಾರ ಸಲಹೆ: ', or: 'ଆହାର ପରାମର୍ଶ: ', ml: 'ഭക്ഷണ നിർദ്ദേശം: ', pa: 'ਖੁਰਾਕ ਸੁਝਾਅ: ', as: 'খাদ্য পৰামৰ্শ: ' },
+            bpAlert: { en: 'Please enter valid systolic and diastolic values.', hi: 'कृपया मान्य सिस्टोलिक और डायस्टोलिक मान दर्ज करें।', bn: 'অনুগ্রহ করে বৈধ সিস্টোলিক এবং ডায়াস্টোলিক মান লিখুন।', te: 'దయచేసి చెల్లుబాటు అయ్యే సిస్టోలిక్ మరియు డయాస్టోలిక్ విలువలను నమోదు చేయండి.', mr: 'कृपया वैध सिस्टोलिक आणि डायस्टोलिक मूल्ये प्रविष्ट करा.', ta: 'சரியான சிஸ்டாலிக் மற்றும் டயஸ்டாலிக் மதிப்புகளை உள்ளிடவும்.', ur: 'براہ کرم درست سیسٹولک اور ڈائیسٹولک قدریں درج کریں۔', gu: 'કૃપા કરીને માન્ય સિસ્ટોલિક અને ડાયસ્ટોલિક મૂલ્યો દાખલ કરો.', kn: 'ದಯವಿಟ್ಟು ಮಾನ್ಯವಾದ ಸಿಸ್ಟೋಲಿಕ್ ಮತ್ತು ಡಯಾಸ್ಟೋಲಿಕ್ ಮೌಲ್ಯಗಳನ್ನು ನಮೂದಿಸಿ.', or: 'ଦୟାକରି ବୈଧ ସିଷ୍ଟୋଲିକ୍ ଏବଂ ଡାଇଷ୍ଟୋଲିକ୍ ମୂଲ୍ୟ ପ୍ରବେଶ କରନ୍ତୁ |', ml: 'സാധുവായ സിസ്റ്റോളിക്, ഡയസ്റ്റോളിക് മൂല്യങ്ങൾ നൽകുക.', pa: 'ਕਿਰਪਾ ਕਰਕੇ ਸਹੀ ਸਿਸਟੋਲਿਕ ਅਤੇ ਡਾਇਸਟੋਲਿਕ ਮੁੱਲ ਦਾਖਲ ਕਰੋ।', as: 'অনুগ্ৰহ কৰি বৈধ চিষ্ট’লিক আৰু ডায়াষ্ট’লিক মান দিয়ক।' },
+            bpInterpretationLow: { en: 'Low Blood Pressure (Hypotension)', hi: 'निम्न रक्तचाप (हाइपोटेंशन)', bn: 'নিম্ন রক্তচাপ (হাইপোটেনশন)', te: 'తక్కువ రక్తపోటు (హైపోటెన్షన్)', mr: 'कमी रक्तदाब (हायपोटेन्शन)', ta: 'குறைந்த இரத்த அழுத்தம் (ஹைпоடென்ஷன்)', ur: 'کم بلڈ پریشر (ہائپوٹینشن)', gu: 'ઓછું લોહિનુ દબાણ (હાયપોટેન્શન)', kn: 'ಕಡಿಮೆ ರಕ್ತದೊತ್ತಡ (ಹೈಪೊಟೆನ್ಷನ್)', or: 'ନିମ୍ନ ରକ୍ତଚାପ (ହାଇପୋଟେନ୍ସନ୍)', ml: 'കുറഞ്ഞ രക്തസമ്മർദ്ദം (ഹൈപ്പോടെൻഷൻ)', pa: 'ਘੱਟ ਬਲੱਡ ਪ੍ਰੈਸ਼ਰ (ਹਾਈਪੋਟੈਂਸ਼ਨ)', as: 'কম ৰক্তচাপ (হাইপ’টেন্সন)' },
+            bpInterpretationNormal: { en: 'Normal Blood Pressure', hi: 'सामान्य रक्तचाप', bn: 'স্বাভাবিক রক্তচাপ', te: 'సాధారణ రక్తపోటు', mr: 'सामान्य रक्तदाब', ta: 'சாதாரண இரத்த அழுத்தம்', ur: 'عام بلڈ پریشر', gu: 'સામાન્ય બ્લડ પ્રેશર', kn: 'ಸಾಮಾನ್ಯ ರಕ್ತದೊತ್ತಡ', or: 'ସାଧାରଣ ରକ୍ତଚାପ', ml: 'സാധാരണ രക്തസമ്മർദ്ദം', pa: 'ਸਧਾਰਣ ਬਲੱਡ ਪ੍ਰੈਸ਼ਰ', as: 'স্বাভাবিক ৰক্তচাপ' },
+            bpInterpretationHigh: { en: 'High Blood Pressure (Hypertension)', hi: 'उच्च रक्तचाप (हाइपरटेंशन)', bn: 'উচ্চ রক্তচাপ (হাইপারটেনশন)', te: 'అధిక రక్తపోటు (హైపర్‌టెన్షన్)', mr: 'उच्च रक्तदाब (हायपरटेन्शन)', ta: 'உயர் இரத்த அழுத்தம் (ஹைப்பர்டென்ஷன்)', ur: 'ہائی بلڈ پریشر (ہائپرٹینشن)', gu: 'ઉચ્ચ લોહિનુ દબાણ (હાયપરટેન્શન)', kn: 'ಹೆಚ್ಚಿನ ರಕ್ತದೊತ್ತಡ (ಹೈಪರ್‌ಟೆನ್ಷನ್)', or: 'ଉଚ୍ଚ ରକ୍ତଚାପ (ହାଇପରଟେନସନ)', ml: 'ഉയർന്ന രക്തസമ്മർദ്ദം (ഹൈപ്പർടെൻഷൻ)', pa: 'ਹਾਈ ਬਲੱਡ ਪ੍ਰੈਸ਼ਰ (ਹਾਈਪਰਟੈਂਸ਼ਨ)', as: 'উচ্চ ৰক্তচাপ (হাইপাৰটেনশ্বন)' },
+            bpDietLow: { en: 'Increase salt, drink fluids, consult a doctor.', hi: 'नमक बढ़ाएं, तरल पदार्थ पिएं, डॉक्टर से सलाह लें।', bn: 'লবণ বাড়ান, তরল পান করুন, ডাক্তারের পরামর্শ নিন।', te: 'ఉప్పు పెంచండి, ద్రవాలు తాగండి, వైద్యుడిని సంప్రదించండి.', mr: 'मीठ वाढवा, द्रव प्या, डॉक्टरांचा सल्ला घ्या.', ta: 'உப்பை அதிகரிக்கவும், திரவங்களை அருந்தவும், மருத்துவரை அணுகவும்.', ur: 'نمک میں اضافہ کریں، مائعات پئیں، ڈاکٹر سے رجوع کریں۔', gu: 'મીઠું વધારો, પ્રવાહી પીવો, ડૉક્ટરની સલાહ લો.', kn: 'ಉಪ್ಪನ್ನು ಹೆಚ್ಚಿಸಿ, ದ್ರವಗಳನ್ನು ಕುಡಿಯಿರಿ, ವೈದ್ಯರನ್ನು ಸಂಪರ್ಕಿಸಿ.', or: 'ଲୁଣ ବଢାନ୍ତୁ, ତରଳ ପିଅନ୍ତୁ, ଡାକ୍ତରଙ୍କ ସହିତ ପରାମର୍ଶ କରନ୍ତୁ।', ml: 'ഉപ്പ് വർദ്ധിപ്പിക്കുക, ദ്രാവകങ്ങൾ കുടിക്കുക, ഡോക്ടറെ സമീപിക്കുക.', pa: 'ਨਮਕ ਵਧਾਓ, ਤਰਲ ਪਦਾਰਥ ਪੀਓ, ਡਾਕਟਰ ਦੀ ਸਲਾਹ ਲਓ।', as: 'নিমখ বঢ়াওক, তৰল পদার্থ খাওক, চিকিৎসকৰ পৰামৰ্শ লওক।' },
+            bpDietNormal: { en: 'Maintain a balanced diet.', hi: 'संतुलित आहार बनाए रखें।', bn: 'সুষম খাদ্য বজায় রাখুন।', te: 'సమతుల్య ఆహారం తీసుకోండి.', mr: 'संतुलित आहार ठेवा.', ta: 'சமச்சீர் உணவைப் பராமரிக்கவும்.', ur: 'متوازن غذا برقرار رکھیں۔', gu: 'સંતુલિત આહાર જાળવો.', kn: 'ಸಮತೋಲಿತ ಆಹಾರವನ್ನು ಕಾಪಾಡಿಕೊಳ್ಳಿ.', or: 'ସନ୍ତୁଳିତ ଆହାର ବଜାୟ ରଖନ୍ତୁ।', ml: 'സമീകൃതാഹാരം പാലിക്കുക.', pa: 'ਸੰਤੁਲਿਤ ਖੁਰਾਕ ਬਣਾਈ ਰੱਖੋ।', as: 'সন্তুলিত আহাৰ বজাই ৰাখক।' },
+            bpDietHigh: { en: 'Reduce sodium, exercise, see a doctor.', hi: 'सोडियम कम करें, व्यायाम करें, डॉक्टर को दिखाएं।', bn: 'সোডিয়াম কমান, ব্যায়াম করুন, ডাক্তারের সাথে দেখা করুন।', te: 'సోడియం తగ్గించండి, వ్యాయామం చేయండి, వైద్యుడిని సంప్రదించండి.', mr: 'सोडियम कमी करा, व्यायाम करा, डॉक्टरांना भेटा.', ta: 'சோடியத்தைக் குறைக்கவும், உடற்பயிற்சி செய்யவும், மருத்துவரைப் பார்க்கவும்.', ur: 'سوڈیم کم کریں، ورزش کریں، ڈاکٹر سے ملیں۔', gu: 'સોડિયમ ઓછું કરો, કસરત કરો, ડૉક્ટરને મળો.', kn: 'ಸೋಡಿಯಂ ಕಡಿಮೆ ಮಾಡಿ, ವ್ಯಾಯಾಮ ಮಾಡಿ, ವೈದ್ಯರನ್ನು ಭೇಟಿ ಮಾಡಿ.', or: 'ସୋଡିୟମ୍ କମାନ୍ତୁ, ବ୍ୟାୟାମ କରନ୍ତୁ, ଡାକ୍ତର ଦେଖା କରନ୍ତୁ।', ml: 'സോഡിയം കുറയ്ക്കുക, വ്യായാമം ചെയ്യുക, ഡോക്ടറെ കാണുക.', pa: 'ਸੋਡੀਅਮ ਘਟਾਓ, ਕਸਰਤ ਕਰੋ, ਡਾਕਟਰ ਨੂੰ ਮਿਲੋ।', as: 'ছ’ডিয়াম কমাওক, ব্যায়াম কৰক, চিকিৎসকক দেখুৱাওক।' },
+            navClinic: { en: 'Clinic Home', hi: 'क्लिनिक होम', bn: 'ক্লিনিক হোম', te: 'క్లినిక్ హోమ్', mr: 'क्लिनिक होम', ta: 'கிளினிக் முகப்பு', ur: 'کلینک ہوم', gu: 'ક્લિનિક હોમ', kn: 'ಕ್ಲಿನಿಕ್ ಮುಖಪುಟ', or: 'କ୍ଲିନିକ୍ ହୋମ୍', ml: 'ക്ലിനിക്ക് ഹോം', pa: 'ਕਲੀਨਿਕ ਹੋਮ', as: 'ক্লিনিক হোম' },
+            navCheckup: { en: 'Checkup', hi: 'जाँच', bn: 'চেকআপ', te: 'చెక్అప్', mr: 'तपासणी', ta: 'பரிசோதனை', ur: 'چیک اپ', gu: 'ચેકઅપ', kn: 'ತಪಾಸಣೆ', or: 'ଚେକଅପ୍', ml: 'പരിശോധന', pa: 'ਚੈੱਕਅੱਪ', as: 'পৰীক্ষা' },
+            navBloodTest: { en: 'Blood Test', hi: 'रक्त परीक्षण', bn: 'রক্ত পরীক্ষা', te: 'రక్త పరీక్ష', mr: 'रक्त तपासणी', ta: 'இரத்த பரிசோதனை', ur: 'خون کا ٹیسٹ', gu: 'રક્ત પરીક્ષણ', kn: 'ರಕ್ತ ಪರೀಕ್ಷೆ', or: 'ରକ୍ତ ପରୀକ୍ଷା', ml: 'രക്തപരിശോധന', pa: 'ਖੂਨ ਦੀ ਜਾਂਚ', as: 'ৰক্ত পৰীক্ষা' },
+            navScanning: { en: 'Scanning', hi: 'स्क্যানিং', bn: 'স্ক্যানিং', te: 'స్కానింగ్', mr: 'स्कॅनिंग', ta: 'ஸ்கேனிங்', ur: 'اسکیننگ', gu: 'સ્કેનિંગ', kn: 'ಸ್ಕ್ಯಾನಿಂಗ್', or: 'ସ୍କାନିଂ', ml: 'സ്കാനിംഗ്', pa: 'ਸਕੈਨਿੰਗ', as: 'স্কেনিং' },
+            navReports: { en: 'Reports', hi: 'रिपोर्ट्स', bn: 'রিপোর্ট', te: 'నివేదికలు', mr: 'अहवाल', ta: 'அறிக்கைகள்', ur: 'رپورٹس', gu: 'રિપોર્ટ્સ', kn: 'ವರದಿಗಳು', or: 'ରିପୋର୍ଟଗୁଡିକ', ml: 'റിപ്പോർട്ടുകൾ', pa: 'ਰਿਪੋਰਟਾਂ', as: 'ৰিপৰ্ট' },
+            menuHello: { en: 'Hello User!', hi: 'नमस्ते उपयोगकर्ता!', bn: 'নমস্কার ব্যবহারকারী!', te: 'హలో యూజర్!', mr: 'नमस्कार यूजर!', ta: 'வணக்கம் பயனరే!', ur: 'ہیلو صارف!', gu: 'નમસ્તે વપરાશકર્તા!', kn: 'ನಮಸ್ಕಾರ ಬಳಕೆದಾರ!', or: 'ନମସ୍କାର ବ୍ୟବହାରକାରୀ!', ml: 'ഹലോ യൂസർ!', pa: 'ਸਤ ਸ੍ਰੀ ਅਕਾਲ ਯੂਜ਼ਰ!', as: 'নমস্কাৰ ব্যৱহাৰকাৰী!' },
+            settingsTitle: { en: 'Settings', hi: 'सेटिंग्स', bn: 'সেটিংস', te: 'సెట్టింగ్‌లు', mr: 'सेटिंग्ज', ta: 'அமைப்புகள்', ur: 'سیٹنگز', gu: 'સેટિંગ્સ', kn: 'ಸಂಯೋਜನೆಗಳು', or: 'ସେଟିଂସମୂହ', ml: 'ക്രമീകരണങ്ങൾ', pa: 'ਸੈਟਿੰਗਾਂ', as: 'ছেটিংসমূহ' },
+            menuHospitalsTitle: { en: 'Nearby Hospitals', hi: 'आस-पास के अस्पताल', bn: 'কাছাকাছি হাসপাতাল', te: 'సమీపంలోని ఆసుపత్రులు', mr: 'जवळपासची रुग्णालये', ta: 'அருகிலுள்ள மருத்துவமனைகள்', ur: 'قریبی ہسپتال', gu: 'નજીકની હોસ્પિટલો', kn: 'ಹತ್ತಿರದ ಆಸ್ಪತ್ರೆಗಳು', or: 'ନିକଟବର୍ତ୍ତୀ ହସ୍ପିଟାଲଗୁଡିକ', ml: 'സമീപത്തുള്ള ആശുപത്രികൾ', pa: 'ਨੇੜਲੇ ਹਸਪਤਾਲ', as: 'ওচৰৰ চিকিৎসালয়' },
+            profileTitle: { en: 'User Profile', hi: 'उपयोगकर्ता प्रोफ़ाइल', bn: 'ব্যবহারকারী প্রোফাইল', te: 'యూజర్ ప్రొఫైల్', mr: 'वापरकर्ता प्रोफाइल', ta: 'பயனர் சுயவிவரம்', ur: 'صارف پروفائل', gu: 'વપરાશકર્તા પ્રોફાઇલ', kn: 'ಬಳಕೆದಾರರ ಪ್ರೊಫೈಲ್', or: 'ବ୍ୟବହାରକାରୀ ପ୍ରୋଫାଇଲ୍', ml: 'ഉപയോക്തൃ പ്രൊഫൈൽ', pa: 'ਉਪਭੋਗਤਾ ਪ੍ਰੋਫਾਈਲ', as: 'ব্যৱহাৰকাৰীৰ প্ৰফাইল' },
+            editProfileTitle: { en: 'Edit Profile', hi: 'प्रोफ़ाइल संपादित करें', bn: 'প্রোফাইল সম্পাদনা করুন', te: 'ప్రొఫైల్ సవరించండి', mr: 'प्रोफाइल संपादित करा', ta: 'சுயவிவரத்தைத் திருத்து', ur: 'پروفائل میں ترمیم کریں', gu: 'પ્રોફાઇલ સંપાદિત કરો', kn: 'ಪ್ರೊಫೈಲ್ ಸಂಪಾದಿಸಿ', or: 'ପ୍ରୋଫାଇଲ୍ ସମ୍ପାଦନ କରନ୍ତୁ |', ml: 'പ്രൊഫൈൽ എഡിറ്റുചെയ്യുക', pa: 'ਪ੍ਰੋਫਾਈਲ ਸੰਪਾਦਿਤ ਕਰੋ', as: 'প্ৰফাইল সম্পাদনা কৰক' },
+            profileNameLabel: { en: 'Name:', hi: 'नाम:', bn: 'নাম:', te: 'పేరు:', mr: 'नाव:', ta: 'பெயர்:', ur: 'نام:', gu: 'નામ:', kn: 'ಹೆಸರು:', or: 'ନାମ:', ml: 'പേര്:', pa: 'ਨਾਮ:', as: 'নাম:' },
+            profileAgeLabel: { en: 'Age:', hi: 'आयु:', bn: 'বয়স:', te: 'వయస్సు:', mr: 'वय:', ta: 'வயது:', ur: 'عمر:', gu: 'ઉંમર:', kn: 'ವಯಸ್ಸು:', or: 'ବୟସ:', ml: 'വയസ്സ്:', pa: 'ਉਮਰ:', as: 'বয়স:' },
+            yrUnit: { en: 'yr', hi: 'वर्ष', bn: 'বছর', te: 'సం', mr: 'वर्षे', ta: 'ஆண்டு', ur: 'سال', gu: 'વર્ષ', kn: 'ವರ್ಷ', or: 'ବର୍ଷ', ml: 'വർഷം', pa: 'ਸਾਲ', as: 'বছৰ' },
+            profileGenderLabel: { en: 'Gender:', hi: 'लिंग:', bn: 'লিঙ্গ:', te: 'లింగం:', mr: 'लिंग:', ta: 'பாலினம்:', ur: 'جنس:', gu: 'જાતિ:', kn: 'ಲಿಂಗ:', or: 'ଲିଙ୍ଗ:', ml: 'ലിംഗം', pa: 'ਲਿੰਗ:', as: 'লিংগ:' },
+            profileHeightLabel: { en: 'Height:', hi: 'ऊंचाई:', bn: 'উচ্চতা:', te: 'ఎత్తు:', mr: 'उंची:', ta: 'உயரம்:', ur: 'قد:', gu: 'ઊંચાઈ:', kn: 'ಎತ್ತರ:', or: 'ଉଚ୍ଚତା:', ml: 'ഉയരം:', pa: 'ਕੱਦ:', as: 'উচ্চতা:' },
+            cmUnit: { en: 'cm', hi: 'सेमी', bn: 'সেমি', te: 'సెం.మీ.', mr: 'सेमी', ta: 'செ.மீ.', ur: 'سینٹی میٹر', gu: 'સેમી', kn: 'ಸೆಂ', or: 'ସେମି', ml: 'സെ.മീ', pa: 'ਸੈਮੀ', as: 'ছে.মি.' },
+            profileWeightLabel: { en: 'Weight:', hi: 'वजन:', bn: 'ওজন:', te: 'బరువు:', mr: 'वजन:', ta: 'எடை:', ur: 'وزن:', gu: 'વજન:', kn: 'ತೂಕ:', or: 'ଓଜନ:', ml: 'ഭാരം:', pa: 'ਭਾਰ:', as: 'ওজন:' },
+            kgUnit: { en: 'kg', hi: 'किलो', bn: 'কেজি', te: 'కిలోలు', mr: 'किलो', ta: 'கிலோ', ur: 'کلوگرام', gu: 'કિલો', kn: 'ಕೆಜಿ', or: 'କିଗ୍ରା', ml: 'കിലോ', pa: 'ਕਿਲੋ', as: 'কিলোগ্ৰাম' },
+            profileReminders: { en: 'Reminders', hi: 'रिमाइंडर', bn: 'অনুস্মারক', te: 'రిమైండర్‌లు', mr: 'स्मरणपत्रे', ta: 'நினைவூட்டல்கள்', ur: 'یاد دہانیاں', gu: 'રીમાઇન્ડર્સ', kn: 'ಜ್ಞಾಪನೆಗಳು', or: 'ସ୍ମାରକପତ୍ର', ml: 'ഓർമ്മപ്പെടുത്തലുകൾ', pa: 'ਰੀਮਾਈਂਡਰ', as: 'স্মাৰক' },
+            profileProgress: { en: 'Your Health Progress (Week)', hi: 'आपकी स्वास्थ्य प्रगति (सप्ताह)', bn: 'আপনার স্বাস্থ্য অগ্রগতি (সপ্তাহ)', te: 'మీ ఆరోగ్య పురోగతి (వారం)', mr: 'तुमची आरोग्य प्रगती (आठवडा)', ta: 'உங்கள் சுகாதார முன்னேற்றம் (வாரம்)', ur: 'آپ کی صحت کی پیشرفت (ہفتہ)', gu: 'તમારી આરોગ્ય પ્રગતિ (અઠવાડિયું)', kn: 'ನಿಮ್ಮ ಆರೋগ্য ಪ್ರಗತಿ (ವಾರ)', or: 'ଆପଣଙ୍କ ସ୍ୱାସ୍ଥ୍ୟ ପ୍ରଗତି (ସପ୍ତାହ)', ml: 'നിങ്ങളുടെ ആരോഗ്യ പുരോഗതി (ആഴ്ച)', pa: 'ਤੁਹਾਡੀ ਸਿਹਤ ਦੀ ਪ੍ਰਗਤੀ (ਹਫ਼ਤਾ)', as: 'আপোনাৰ স্বাস্থ্যৰ প্ৰগতি (সপ্তাহ)' },
+            logoutButton: { en: 'Logout', hi: 'लॉग आउट', bn: 'লগআউট', te: 'లాగ్ అవుట్', mr: 'लॉग आउट', ta: 'வெளியேறு', ur: 'لاگ آوٹ', gu: 'ਲૉગ ਆઉਟ', kn: 'ಲಾಗ್ ಔਟ', or: 'ଲଗଆଉଟ୍', ml: 'ലോഗ്ഔട്ട്', pa: 'ਲਾਗ ਆਊਟ', as: 'লগ আউট' },
+            dayMon: { en: 'Mon', hi: 'सोम', bn: 'সোম', te: 'సోమ', mr: 'సోమ', ta: 'திங்', ur: 'پیر', gu: 'સોમ', kn: 'ಸೋಮ', or: 'ସୋମ', ml: 'തിങ്കൾ', pa: 'ਸੋਮ', as: 'সোম' },
+            dayTue: { en: 'Tue', hi: 'मंगल', bn: 'মঙ্গল', te: 'మంగళ', mr: 'మంగళ', ta: 'செவ்', ur: 'منگل', gu: 'મંગળ', kn: 'ಮಂಗಳ', or: 'ମଙ୍ଗଳ', ml: 'ചൊവ്വ', pa: 'ਮੰਗਲ', as: 'মঙ্গল' },
+            dayWed: { en: 'Wed', hi: 'बुध', bn: 'বুধ', te: 'బుధ', mr: 'बुध', ta: 'புத', ur: 'بدھ', gu: 'બુધ', kn: 'ಬುಧ', or: 'ବୁଧ', ml: 'ബുധൻ', pa: 'ਬੁਧ', as: 'বুধ' },
+            dayThu: { en: 'Thu', hi: 'गुरु', bn: 'বৃহ', te: 'గురు', mr: 'गुरु', ta: 'வியா', ur: 'جمعرات', gu: 'ગુરુ', kn: 'ಗುರು', or: 'ଗୁରୁ', ml: 'വ്യാഴം', pa: 'ਵੀਰ', as: 'বৃহ' },
+            dayFri: { en: 'Fri', hi: 'शुक्र', bn: 'শুক্র', te: 'శుక్ర', mr: 'शुक्र', ta: 'வெள்', ur: 'جمعہ', gu: 'શુક્ર', kn: 'ಶುಕ್ರ', or: 'ଶୁକ୍ର', ml: 'വെള്ളി', pa: 'ਸ਼ੁੱਕਰ', as: 'שুক্ৰ' },
+            daySat: { en: 'Sat', hi: 'शनि', bn: 'שনি', te: 'శని', mr: 'शनि', ta: 'சனி', ur: 'ہفتہ', gu: 'શનિ', kn: 'ಶನಿ', or: 'ଶନି', ml: 'ശനി', pa: 'ਸ਼ਨੀ', as: 'שনি' },
+            daySun: { en: 'Sun', hi: 'रवि', bn: 'রবি', te: 'ఆది', mr: 'रवि', ta: 'ஞாயி', ur: 'اتوار', gu: 'રવિ', kn: 'ರವಿ', or: 'ରବି', ml: 'ഞായർ', pa: 'ਐਤ', as: 'ৰবি' },
+            addReminderTitle: {en: 'Add Medicine Reminder', hi: 'दवा अनुस्मारक जोड़ें', bn: 'ঔষধ রিমাইন্ডার যোগ করুন'},
+            medNameLabel: {en: 'Medicine Name', hi: 'दवा का नाम', bn: 'ঔষধের নাম'},
+            medTimesLabel: {en: 'Times (e.g., 08:00, 22:00)', hi: 'समय (उदा. 08:00, 22:00)', bn: 'সময় (উদাঃ 08:00, 22:00)'},
+            medMealLabel: {en: 'Meal', hi: 'भोजन', bn: 'খাবার'},
+            cancelBtn: {en: 'Cancel', hi: 'रद्द करें', bn: 'বাতিল'},
+            saveBtn: {en: 'Save', hi: 'सहेजें', bn: 'সংরক্ষণ'},
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+
+            const smartphoneContainer = document.querySelector('.smartphone-container');
+            const menuIcon = document.querySelector('.menu-icon');
+            const userIcon = document.querySelector('.user-icon');
+            const bottomIconContainer = document.querySelector('.bottom-icons');
+            const slideOut = document.querySelector('.slide-out');
+            const userSlideOut = document.querySelector('.user-slide-out');
+            const closeButtons = document.querySelectorAll('.close-button');
+
+            const calculateButton = document.getElementById('calculateBtn');
+            
+            const savedLang = localStorage.getItem('preferredLanguage') || 'en';
+            changeLanguage(savedLang);
+
+            const locationDisplay = document.querySelector('.location-display');
+            const hospitalList = document.querySelector('.slide-out .hospital-list');
+            let hasFetchedLocation = false;
+            
+            const reminderModal = document.querySelector('.reminder-modal-overlay');
+            const addReminderBtn = document.querySelector('.add-reminder-btn');
+            const cancelReminderBtn = document.querySelector('.modal-cancel-btn');
+            const reminderForm = document.getElementById('reminder-form');
+            const reminderList = document.querySelector('.user-slide-out .reminder-list');
+            let reminders = JSON.parse(localStorage.getItem('microClinicReminders')) || [];
+            renderReminders();
+
+            const userSlideOutPanel = document.querySelector('.user-slide-out');
+            const editProfileBtn = document.querySelector('.edit-profile-btn');
+            const profileEditForm = document.querySelector('#profile-edit-form');
+            const cancelProfileEditBtn = document.querySelector('#cancel-profile-edit');
+            const displayName = document.querySelector('#display-name');
+            const displayAge = document.querySelector('#display-age');
+            const displayGender = document.querySelector('#display-gender');
+            const displayHeight = document.querySelector('#display-height');
+            const displayWeight = document.querySelector('#display-weight');
+            const editName = document.querySelector('#edit-name');
+            const editAge = document.querySelector('#edit-age');
+            const editGender = document.querySelector('#edit-gender');
+            const editHeight = document.querySelector('#edit-height');
+            const editWeight = document.querySelector('#edit-weight');
+
+            const languageSelector = document.querySelector('.language-selector');
+
+            function changeLanguage(lang) {
+                if (!lang) return;
+                document.documentElement.lang = lang;
+                document.querySelectorAll('[data-key]').forEach(elem => {
+                    const key = elem.dataset.key;
+                    const translation = languageData[key]?.[lang];
+
+                    if (translation) {
+                        if (elem.nodeName === 'INPUT' && elem.hasAttribute('placeholder')) {
+                            elem.placeholder = translation;
+                        } else if (elem.hasAttribute('title')) {
+                            elem.title = translation;
+                        } else {
+                            elem.textContent = translation;
+                        }
+                    }
+                });
+                document.querySelectorAll('.lang-button').forEach(btn => {
+                    btn.classList.toggle('active', btn.dataset.lang === lang);
+                });
+                localStorage.setItem('preferredLanguage', lang);
+            }
+
+            languageSelector.addEventListener('click', (event) => {
+                const button = event.target.closest('.lang-button');
+                if (button) {
+                    changeLanguage(button.dataset.lang);
+                }
+            });
+            
+            bottomIconContainer.addEventListener('click', function (event) {
+                const link = event.target.closest('a');
+                if (link && bottomIconContainer.contains(link)) {
+                    bottomIconContainer.querySelectorAll('i').forEach(icon => icon.classList.remove('active'));
+                    const iconInLink = link.querySelector('i');
+                    if (iconInLink) iconInLink.classList.add('active');
+                }
+            });
+
+            menuIcon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeAllSlides(userSlideOut);
+                slideOut.classList.add('active');
+                smartphoneContainer.classList.add('slide-active');
+                if (!hasFetchedLocation) handleGeolocation();
+            });
+
+            userIcon.addEventListener('click', (e) => {
+                e.stopPropagation();
+                closeAllSlides(slideOut);
+                userSlideOut.classList.add('active');
+                smartphoneContainer.classList.add('user-slide-active');
+            });
+
+            closeButtons.forEach(button => {
+                button.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const panelToClose = e.target.closest('.slide-out, .user-slide-out');
+                    closeSlide(panelToClose);
+                });
+            });
+
+            function closeSlide(panelElement) {
+                if (!panelElement || !panelElement.classList.contains('active')) return;
+                panelElement.classList.remove('active');
+                if (panelElement.classList.contains('user-slide-out') && panelElement.classList.contains('edit-mode')) {
+                    exitEditMode();
+                }
+                if (panelElement.classList.contains('slide-out')) {
+                    smartphoneContainer.classList.remove('slide-active');
+                } else if (panelElement.classList.contains('user-slide-out')) {
+                    smartphoneContainer.classList.remove('user-slide-active');
+                }
+            }
+
+            function closeAllSlides(...panelsToKeepOpen) {
+                [slideOut, userSlideOut].forEach(panel => {
+                    if (!panelsToKeepOpen.includes(panel)) closeSlide(panel);
+                });
+            }
+
+            function handleGeolocation() {
+                locationDisplay.innerHTML = `<i class="fas fa-spinner fa-spin loading-spinner"></i> Finding location...`;
+                hospitalList.innerHTML = `<li class="list-placeholder"><i class="fas fa-spinner fa-spin loading-spinner"></i> Loading hospitals...</li>`;
+
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(
+                        (position) => {
+                            const { latitude, longitude } = position.coords;
+                            fetchReverseGeocode(latitude, longitude);
+                            fetchNearbyHospitals(latitude, longitude);
+                            hasFetchedLocation = true;
+                        },
+                        (error) => {
+                            console.error(`Geolocation error: ${error.message}`);
+                            locationDisplay.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Location access denied.`;
+                            hospitalList.innerHTML = `<li class="list-placeholder">Cannot fetch hospitals without location.</li>`;
+                        }
+                    );
+                } else {
+                    locationDisplay.innerHTML = `<i class="fas fa-exclamation-triangle"></i> Geolocation not supported.`;
+                    hospitalList.innerHTML = ``;
+                }
+            }
+            
+            async function fetchReverseGeocode(lat, lon) {
+                await new Promise(resolve => setTimeout(resolve, 800));
+                locationDisplay.innerHTML = `<i class="fas fa-map-marker-alt"></i> Location: Bhubaneswar, Odisha`;
+            }
+
+            async function fetchNearbyHospitals(lat, lon) {
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                const simulatedHospitals = [
+                    { name: 'AIIMS Hospital', distance: '1.2km' },
+                    { name: 'Apollo Hospital', distance: '2.5km' },
+                    { name: 'AMRI Hospital', distance: '3.1km' },
+                    { name: 'Kar Clinic', distance: '4.0km' }
+                ];
+                hospitalList.innerHTML = '';
+                simulatedHospitals.forEach(hospital => {
+                    const li = document.createElement('li');
+                    li.textContent = `${hospital.name}: ${hospital.distance}`;
+                    hospitalList.appendChild(li);
+                });
+            }
+
+            function enterEditMode() {
+                editName.value = displayName.textContent.trim();
+                editAge.value = displayAge.textContent.trim();
+                editGender.value = displayGender.textContent.trim();
+                editHeight.value = displayHeight.textContent.trim();
+                editWeight.value = displayWeight.textContent.trim();
+                userSlideOutPanel.classList.add('edit-mode');
+            }
+
+            function exitEditMode() {
+                userSlideOutPanel.classList.remove('edit-mode');
+            }
+
+            editProfileBtn.addEventListener('click', enterEditMode);
+            cancelProfileEditBtn.addEventListener('click', exitEditMode);
+
+            profileEditForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                displayName.textContent = editName.value.trim();
+                displayAge.textContent = editAge.value.trim();
+                displayGender.textContent = editGender.value.trim();
+                displayHeight.textContent = editHeight.value.trim();
+                displayWeight.textContent = editWeight.value.trim();
+                exitEditMode();
+            });
+            
+            function openReminderModal() { reminderModal.classList.add('active'); }
+            function closeReminderModal() { reminderModal.classList.remove('active'); reminderForm.reset(); }
+
+            function saveReminders() {
+                localStorage.setItem('microClinicReminders', JSON.stringify(reminders));
+            }
+
+            function renderReminders() {
+                reminderList.innerHTML = '';
+                if (reminders.length === 0) {
+                    reminderList.innerHTML = `<p class="list-placeholder">No reminders added yet.</p>`;
+                    return;
+                }
+                reminders.forEach(reminder => {
+                    const reminderEl = document.createElement('li');
+                    reminderEl.className = 'reminder-item';
+                    reminderEl.dataset.id = reminder.id;
+                    reminderEl.innerHTML = `
+                        <div class="reminder-info">
+                             <i class="fas fa-pills"></i>
+                             <div class="reminder-text">
+                                <p class="med-name">${reminder.name}</p>
+                                <p class="med-details">${reminder.times} - ${reminder.meal}</p>
+                             </div>
+                        </div>
+                        <button class="delete-reminder-btn" title="Delete Reminder"><i class="fas fa-trash-alt"></i></button>
+                    `;
+                    reminderList.appendChild(reminderEl);
+                });
+            }
+
+            addReminderBtn.addEventListener('click', openReminderModal);
+            cancelReminderBtn.addEventListener('click', closeReminderModal);
+            reminderModal.addEventListener('click', (e) => {
+                 if(e.target === reminderModal) closeReminderModal();
+            });
+
+            reminderForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const newReminder = {
+                    id: Date.now(),
+                    name: document.getElementById('med-name').value.trim(),
+                    times: document.getElementById('med-times').value.trim(),
+                    meal: document.getElementById('med-meal').value,
+                };
+                reminders.push(newReminder);
+                saveReminders();
+                renderReminders();
+                closeReminderModal();
+            });
+
+            reminderList.addEventListener('click', (e) => {
+                const deleteBtn = e.target.closest('.delete-reminder-btn');
+                if (deleteBtn) {
+                    const reminderId = parseInt(deleteBtn.parentElement.dataset.id, 10);
+                    reminders = reminders.filter(r => r.id !== reminderId);
+                    saveReminders();
+                    renderReminders();
+                }
+            });
+
+            // --- BLOOD PRESSURE CALCULATOR LOGIC (PRESERVED) ---
+            function calculateBloodPressure() {
+                const systolic = document.getElementById('systolic').value;
+                const diastolic = document.getElementById('diastolic').value;
+                const resultContainer = document.querySelector('.result-container');
+                const bloodPressureResult = document.getElementById('bloodPressureResult');
+                const bloodPressureInterpretation = document.getElementById('bloodPressureInterpretation');
+                const dietSuggestion = document.getElementById('dietSuggestion');
+                const loadingOverlay = document.querySelector('.loading-overlay');
+                const lang = localStorage.getItem('preferredLanguage') || 'en';
+
+                if (!systolic || !diastolic || isNaN(systolic) || isNaN(diastolic)) {
+                    alert(languageData.bpAlert[lang]);
+                    return;
+                }
+
+                loadingOverlay.style.display = 'flex';
+                resultContainer.style.display = 'none';
+
+                setTimeout(() => {
+                    loadingOverlay.style.display = 'none';
+                    let resultText = `${systolic} / ${diastolic} mmHg`;
+                    let interpretation = '';
+                    let diet = '';
+                    if (systolic < 90 || diastolic < 60) {
+                        interpretation = languageData.bpInterpretationLow[lang];
+                        diet = languageData.bpDietLow[lang];
+                    } else if (systolic >= 140 || diastolic >= 90) {
+                        interpretation = languageData.bpInterpretationHigh[lang];
+                        diet = languageData.bpDietHigh[lang];
+                    } else {
+                        interpretation = languageData.bpInterpretationNormal[lang];
+                        diet = languageData.bpDietNormal[lang];
+                    }
+                    bloodPressureResult.textContent = resultText;
+                    bloodPressureInterpretation.textContent = interpretation;
+                    dietSuggestion.textContent = languageData.bpDietSuggestionPrefix[lang] + diet;
+                    resultContainer.style.display = 'block';
+                }, 2000);
+            }
+            
+            if(calculateButton) {
+                calculateButton.addEventListener('click', calculateBloodPressure);
+            }
+        });
+    </script>
+</body>
+</html>
